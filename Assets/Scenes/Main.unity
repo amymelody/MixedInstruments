@@ -251,7 +251,7 @@ GameObject:
   - component: {fileID: 1017708186}
   - component: {fileID: 1017708185}
   m_Layer: 0
-  m_Name: KeyboardSpawner
+  m_Name: TabletopManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -269,7 +269,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce83f4541a83cbd489555d14fad06b6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_KeyboardPrefab: {fileID: 4063257394630254733, guid: 33d672c2fffda4c47b2247b716c5860d, type: 3}
+  m_TabletopPrefab: {fileID: 7167357609743540081, guid: 9d62e820c47173144b0135e4c17974c0, type: 3}
 --- !u!4 &1017708186
 Transform:
   m_ObjectHideFlags: 0
@@ -598,9 +598,21 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 15286646796038796, guid: 1782b89ac15b3c34cbc28f0ede57d895, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1066638015231884836, guid: 1782b89ac15b3c34cbc28f0ede57d895, type: 3}
       propertyPath: m_ObjectSpawner
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 1132684408617913788, guid: 1782b89ac15b3c34cbc28f0ede57d895, type: 3}
+      propertyPath: m_NoValidHitProperties.m_EndWidth
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1132684408617913788, guid: 1782b89ac15b3c34cbc28f0ede57d895, type: 3}
+      propertyPath: m_NoValidHitProperties.m_StarWidth
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1447839107455911567, guid: 1782b89ac15b3c34cbc28f0ede57d895, type: 3}
       propertyPath: m_Enabled
@@ -614,9 +626,37 @@ PrefabInstance:
       propertyPath: m_SoftOcclusionPreprocessShader
       value: 
       objectReference: {fileID: 4800000, guid: 0ad967c9b039c4c5db35830a2211d12b, type: 3}
+    - target: {fileID: 1704034599176398203, guid: 1782b89ac15b3c34cbc28f0ede57d895, type: 3}
+      propertyPath: m_NearFarInteractor
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 1891937545068093953, guid: 1782b89ac15b3c34cbc28f0ede57d895, type: 3}
+      propertyPath: m_InteractionLayers.m_Bits
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1977182501538752848, guid: 1782b89ac15b3c34cbc28f0ede57d895, type: 3}
+      propertyPath: m_NearFarInteractor
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 1999546281898362441, guid: 1782b89ac15b3c34cbc28f0ede57d895, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2169099260431908165, guid: 1782b89ac15b3c34cbc28f0ede57d895, type: 3}
       propertyPath: m_Enabled
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2169099260431908165, guid: 1782b89ac15b3c34cbc28f0ede57d895, type: 3}
+      propertyPath: m_BoundingBoxPrefab
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 2330377228436099548, guid: 1782b89ac15b3c34cbc28f0ede57d895, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2453847640928136421, guid: 1782b89ac15b3c34cbc28f0ede57d895, type: 3}
+      propertyPath: m_InteractionLayers.m_Bits
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 2748791781220782709, guid: 1782b89ac15b3c34cbc28f0ede57d895, type: 3}
       propertyPath: m_MenuPressed.m_PersistentCalls.m_Calls.Array.size
@@ -642,6 +682,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: MR Interaction Setup Variant
       objectReference: {fileID: 0}
+    - target: {fileID: 4031926963692815192, guid: 1782b89ac15b3c34cbc28f0ede57d895, type: 3}
+      propertyPath: m_NoValidHitProperties.m_EndWidth
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4031926963692815192, guid: 1782b89ac15b3c34cbc28f0ede57d895, type: 3}
+      propertyPath: m_NoValidHitProperties.m_StarWidth
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4207315347896557211, guid: 1782b89ac15b3c34cbc28f0ede57d895, type: 3}
       propertyPath: m_UIObject
       value: 
@@ -662,8 +710,28 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4703913087055744835, guid: 1782b89ac15b3c34cbc28f0ede57d895, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4836110448067654266, guid: 1782b89ac15b3c34cbc28f0ede57d895, type: 3}
+      propertyPath: m_InteractionLayers.m_Bits
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 5185273552059455249, guid: 1782b89ac15b3c34cbc28f0ede57d895, type: 3}
       propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6020863162435423101, guid: 1782b89ac15b3c34cbc28f0ede57d895, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6261351001507880391, guid: 1782b89ac15b3c34cbc28f0ede57d895, type: 3}
+      propertyPath: m_NoValidHitProperties.m_EndWidth
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6261351001507880391, guid: 1782b89ac15b3c34cbc28f0ede57d895, type: 3}
+      propertyPath: m_NoValidHitProperties.m_StarWidth
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6373159657460180795, guid: 1782b89ac15b3c34cbc28f0ede57d895, type: 3}
@@ -707,6 +775,22 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7378473584237248648, guid: 1782b89ac15b3c34cbc28f0ede57d895, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7857708836499442258, guid: 1782b89ac15b3c34cbc28f0ede57d895, type: 3}
+      propertyPath: m_NoValidHitProperties.m_EndWidth
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7857708836499442258, guid: 1782b89ac15b3c34cbc28f0ede57d895, type: 3}
+      propertyPath: m_NoValidHitProperties.m_StarWidth
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8716059389338199535, guid: 1782b89ac15b3c34cbc28f0ede57d895, type: 3}
+      propertyPath: m_InteractionLayers.m_Bits
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8722340282780434855, guid: 1782b89ac15b3c34cbc28f0ede57d895, type: 3}
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}

@@ -1,11 +1,10 @@
-using Unity.XR.CoreUtils;
 using UnityEngine;
 using UnityEngine.XR.ARFoundation;
 
-public class KeyboardSpawner : MonoBehaviour
+public class TabletopManager : MonoBehaviour
 {
     [SerializeField]
-    GameObject m_KeyboardPrefab;
+    Tabletop m_TabletopPrefab;
 
     ARBoundingBoxManager m_BoundingBoxManager;
 
@@ -22,7 +21,7 @@ public class KeyboardSpawner : MonoBehaviour
         m_BoundingBoxManager.trackablesChanged.AddListener(OnBoundingBoxesChanged);
         foreach (var boundingBox in m_BoundingBoxManager.trackables)
         {
-            SpawnKeyboardOnTable(boundingBox);
+            SpawnTabletop(boundingBox);
         }
     }
 
@@ -49,17 +48,16 @@ public class KeyboardSpawner : MonoBehaviour
     {
         foreach (var boundingBox in args.added)
         {
-            SpawnKeyboardOnTable(boundingBox);
+            SpawnTabletop(boundingBox);
         }
     }
 
-    void SpawnKeyboardOnTable(ARBoundingBox boundingBox)
+    void SpawnTabletop(ARBoundingBox boundingBox)
     {
         if (!boundingBox.classifications.HasFlag(UnityEngine.XR.ARSubsystems.BoundingBoxClassifications.Table))
             return;
 
-        var tablePose = boundingBox.pose;
-        var top = tablePose.position + tablePose.rotation * (0.5f * boundingBox.size.y * Vector3.up);
-        Instantiate(m_KeyboardPrefab, top, tablePose.rotation);
+        var tabletop = Instantiate(m_TabletopPrefab);
+        tabletop.SetupFromBoundingBox(boundingBox);
     }
 }

@@ -20,6 +20,9 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
     public class XRPokeFollowAffordance : MonoBehaviour
     {
         [SerializeField]
+        bool m_OnlyMoveDown = true;
+
+        [SerializeField]
         [Tooltip("Transform that will move in the poke direction when this or a parent GameObject is poked." +
                  "\nNote: Should be a direct child GameObject.")]
         Transform m_PokeFollowTransform;
@@ -209,6 +212,17 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
                 var targetPosition = pokeTarget.InverseTransformPoint(data.axisAlignedPokeInteractionPoint);
                 if (m_ClampToMaxDistance && targetPosition.sqrMagnitude > m_MaxDistance * m_MaxDistance)
                     targetPosition = Vector3.ClampMagnitude(targetPosition, m_MaxDistance);
+
+                if (m_OnlyMoveDown)
+                {
+                    var prevY = m_TransformTweenableVariable.target.y;
+                    var diff = targetPosition.y - prevY;
+                    if (Mathf.Abs(diff) < m_MaxDistance * 0.5f)
+                    {
+                        if (diff > 0f)
+                            targetPosition.y = prevY;
+                    }
+                }
 
                 m_TransformTweenableVariable.target = targetPosition;
             }
