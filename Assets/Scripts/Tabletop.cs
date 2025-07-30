@@ -12,6 +12,21 @@ public class Tabletop : MonoBehaviour
     [SerializeField]
     float m_CalibrationDelayTime = 2f;
 
+    [SerializeField]
+    Transform m_RightEdge;
+
+    [SerializeField]
+    Transform m_BackEdge;
+
+    [SerializeField]
+    Transform m_LeftEdge;
+
+    [SerializeField]
+    Transform m_FrontEdge;
+
+    float m_XScale;
+    float m_ZScale;
+
     XRPokeFollowAffordance m_CalibrationPokeFollowAffordance;
     float m_CalibrationStartTime = -1f;
 
@@ -32,7 +47,9 @@ public class Tabletop : MonoBehaviour
         transform.position = top;
         transform.rotation = tablePose.rotation;
 
-        m_CalibrationInteractable.transform.localScale = new Vector3(boundingBox.size.x, m_CalibrationInteractable.transform.localScale.y, boundingBox.size.z);
+        m_XScale = boundingBox.size.x;
+        m_ZScale = boundingBox.size.z;
+        m_CalibrationInteractable.transform.localScale = new Vector3(m_XScale, m_CalibrationInteractable.transform.localScale.y, m_ZScale);
 
         // Confirm calibration after first poke ends, with delay to accomodate adjustments
         m_CalibrationInteractable.hoverExited.AddListener(OnCalibrationHoverEnded);
@@ -54,6 +71,17 @@ public class Tabletop : MonoBehaviour
     {
         m_CalibrationStartTime = -1f;
         transform.position = new Vector3(transform.position.x, m_CalibrationPokeFollowAffordance.pokeFollowTransform.position.y, transform.position.z);
+
+        m_RightEdge.parent.gameObject.SetActive(true);
+        m_RightEdge.SetZScale(m_ZScale);
+        m_RightEdge.SetXPosition(m_XScale * 0.5f);
+        m_BackEdge.SetXScale(m_XScale);
+        m_BackEdge.SetZPosition(m_ZScale * 0.5f);
+        m_LeftEdge.SetZScale(m_ZScale);
+        m_LeftEdge.SetXPosition(m_XScale * -0.5f);
+        m_FrontEdge.SetXScale(m_XScale);
+        m_FrontEdge.SetZPosition(m_ZScale * -0.5f);
+
         Destroy(m_CalibrationInteractable.gameObject);
     }
 }
