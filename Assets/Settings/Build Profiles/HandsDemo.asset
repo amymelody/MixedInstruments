@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 15003, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: Main
+  m_Name: HandsDemo
   m_EditorClassIdentifier: 
   m_AssetVersion: 1
   m_BuildTarget: 13
@@ -18,8 +18,10 @@ MonoBehaviour:
   m_PlatformId: b9b35072a6f44c2e863f17467ea3dc13
   m_PlatformBuildProfile:
     rid: 45816090540114152
-  m_OverrideGlobalSceneList: 0
-  m_Scenes: []
+  m_OverrideGlobalSceneList: 1
+  m_Scenes:
+  - m_enabled: 1
+    m_path: Assets/Samples/XR Interaction Toolkit/3.1.2/Hands Interaction Demo/HandsDemoScene.unity
   m_ScriptingDefines: []
   m_PlayerSettingsYaml:
     m_Settings:
@@ -34,8 +36,8 @@ MonoBehaviour:
     - line: '|   targetDevice: 2'
     - line: '|   useOnDemandResources: 0'
     - line: '|   accelerometerFrequency: 60'
-    - line: '|   companyName: AmyDiGiovanni'
-    - line: '|   productName: MixedInstruments'
+    - line: '|   companyName: Unity'
+    - line: '|   productName: HandsDemo'
     - line: '|   defaultCursor: {instanceID: 0}'
     - line: '|   cursorHotspot: {x: 0, y: 0}'
     - line: '|   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b:
@@ -169,12 +171,6 @@ MonoBehaviour:
         2}'
     - line: '|   - {instanceID: 0}'
     - line: '|   - {instanceID: 0}'
-    - line: '|   - {fileID: -3728528452315536981, guid: 2462f957eee75f940a3393fd6f039795,
-        type: 2}'
-    - line: '|   - {fileID: -2264778514210020867, guid: 136958f90a130274b8b70a31eed352fb,
-        type: 2}'
-    - line: '|   - {fileID: 11400000, guid: 56a98106ce58f09459a9990007b50acb, type:
-        2}'
     - line: '|   metroInputSource: 0'
     - line: '|   wsaTransparentSwapchain: 0'
     - line: '|   m_HolographicPauseOnTrackingLoss: 1'

@@ -306,7 +306,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_CalibrationInteractable: {fileID: 4751131291315548944}
-  m_CalibrationDelayTime: 2
+  m_CalibrationDelayTime: 1
   m_RightEdge: {fileID: 40585256564918479}
   m_BackEdge: {fileID: 2964102334174620717}
   m_LeftEdge: {fileID: 550348338036286583}
@@ -771,7 +771,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 107935338968861873, guid: 33d672c2fffda4c47b2247b716c5860d, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -0.119
       objectReference: {fileID: 0}
     - target: {fileID: 107935338968861873, guid: 33d672c2fffda4c47b2247b716c5860d, type: 3}
       propertyPath: m_LocalRotation.w
