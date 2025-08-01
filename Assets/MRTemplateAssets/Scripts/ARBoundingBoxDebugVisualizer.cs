@@ -156,6 +156,7 @@ namespace UnityEngine.XR.Templates.MR
 
         void Start()
         {
+            ShowDebugInfoCanvas(true);
             if (m_ShowOrientation)
                 m_DebugInfoDisplayController.SetBottomPivot();
             else

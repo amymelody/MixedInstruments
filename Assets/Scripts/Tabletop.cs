@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
@@ -6,8 +7,10 @@ using UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets;
 
 public class Tabletop : MonoBehaviour
 {
+    const string k_TabletopOffsetYKeyFormat = "MixedInstruments/{0}/OffsetY";
+
     [SerializeField]
-    XRBaseInteractable m_CalibrationInteractable;
+    XRBaseInteractable m_CalibrationInteractablePrefab;
 
     [SerializeField]
     float m_CalibrationDelayTime = 2f;
@@ -24,14 +27,66 @@ public class Tabletop : MonoBehaviour
     [SerializeField]
     Transform m_FrontEdge;
 
+    [SerializeField]
+    Text m_TrackableIDText;
+
+    Vector3 m_InitialPosition;
+    ARBoundingBox m_BoundingBox;
     float m_XScale;
     float m_ZScale;
+    string m_OffsetYKey;
 
+    XRBaseInteractable m_CalibrationInteractable;
     XRPokeFollowAffordance m_CalibrationPokeFollowAffordance;
     float m_CalibrationStartTime = -1f;
 
+    Transform m_TopEdges;
+
     public void SetupFromBoundingBox(ARBoundingBox boundingBox)
     {
+        m_BoundingBox = boundingBox;
+        m_TrackableIDText.text = m_BoundingBox.trackableId.ToString();
+        m_OffsetYKey = string.Format(k_TabletopOffsetYKeyFormat, m_BoundingBox.trackableId.ToString());
+
+        var tablePose = boundingBox.pose;
+        // offset a bit to give room to push down for alignment
+        const float offset = 0.05f;
+        var top = tablePose.position + tablePose.rotation * ((0.5f * boundingBox.size.y + offset) * Vector3.up);
+        transform.position = top;
+        transform.rotation = tablePose.rotation;
+        m_InitialPosition = top;
+
+        m_XScale = boundingBox.size.x;
+        m_ZScale = boundingBox.size.z;
+        m_RightEdge.SetZScale(m_ZScale);
+        m_RightEdge.SetXPosition(m_XScale * 0.5f);
+        m_BackEdge.SetXScale(m_XScale);
+        m_BackEdge.SetZPosition(m_ZScale * 0.5f);
+        m_LeftEdge.SetZScale(m_ZScale);
+        m_LeftEdge.SetXPosition(m_XScale * -0.5f);
+        m_FrontEdge.SetXScale(m_XScale);
+        m_FrontEdge.SetZPosition(m_ZScale * -0.5f);
+        m_TopEdges = m_RightEdge.parent;
+
+        if (!TryLoadCalibration())
+            InitiateCalibration();
+    }
+
+    bool TryLoadCalibration()
+    {
+        if (!PlayerPrefs.HasKey(m_OffsetYKey))
+            return false;
+
+        transform.position += Vector3.up * PlayerPrefs.GetFloat(m_OffsetYKey);
+        m_TopEdges.gameObject.SetActive(true);
+        return true;
+    }
+
+    void InitiateCalibration()
+    {
+        m_CalibrationStartTime = -1f;
+        m_CalibrationInteractable = Instantiate(m_CalibrationInteractablePrefab, transform);
+
         m_CalibrationPokeFollowAffordance = m_CalibrationInteractable.GetComponentInChildren<XRPokeFollowAffordance>();
         if (m_CalibrationPokeFollowAffordance == null)
         {
@@ -40,19 +95,13 @@ public class Tabletop : MonoBehaviour
             return;
         }
 
-        var tablePose = boundingBox.pose;
-        // offset a bit to give room to push down for alignment
-        const float offset = 0.05f;
-        var top = tablePose.position + tablePose.rotation * ((0.5f * boundingBox.size.y + offset) * Vector3.up);
-        transform.position = top;
-        transform.rotation = tablePose.rotation;
-
-        m_XScale = boundingBox.size.x;
-        m_ZScale = boundingBox.size.z;
         m_CalibrationInteractable.transform.localScale = new Vector3(m_XScale, m_CalibrationInteractable.transform.localScale.y, m_ZScale);
 
         // Confirm calibration after first poke ends, with delay to accomodate adjustments
         m_CalibrationInteractable.hoverExited.AddListener(OnCalibrationHoverEnded);
+
+        transform.position = m_InitialPosition;
+        m_TopEdges.gameObject.SetActive(false);
     }
 
     // Update is called once per frame
@@ -71,17 +120,28 @@ public class Tabletop : MonoBehaviour
     {
         m_CalibrationStartTime = -1f;
         transform.position = new Vector3(transform.position.x, m_CalibrationPokeFollowAffordance.pokeFollowTransform.position.y, transform.position.z);
-
-        m_RightEdge.parent.gameObject.SetActive(true);
-        m_RightEdge.SetZScale(m_ZScale);
-        m_RightEdge.SetXPosition(m_XScale * 0.5f);
-        m_BackEdge.SetXScale(m_XScale);
-        m_BackEdge.SetZPosition(m_ZScale * 0.5f);
-        m_LeftEdge.SetZScale(m_ZScale);
-        m_LeftEdge.SetXPosition(m_XScale * -0.5f);
-        m_FrontEdge.SetXScale(m_XScale);
-        m_FrontEdge.SetZPosition(m_ZScale * -0.5f);
-
+        m_TopEdges.gameObject.SetActive(true);
         Destroy(m_CalibrationInteractable.gameObject);
+    }
+
+    public void SaveCalibration()
+    {
+        var offsetY = transform.position.y - m_InitialPosition.y;
+        PlayerPrefs.SetFloat(m_OffsetYKey, offsetY);
+        m_TrackableIDText.text = "Saved";
+        Invoke(nameof(ResetText), 3f);
+    }
+
+    void ResetText()
+    {
+        m_TrackableIDText.text = m_BoundingBox.trackableId.ToString();
+    }
+
+    public void ResetCalibration()
+    {
+        if (m_CalibrationInteractable != null)
+            Destroy(m_CalibrationInteractable.gameObject);
+
+        InitiateCalibration();
     }
 }
