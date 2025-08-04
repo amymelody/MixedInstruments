@@ -59,9 +59,9 @@ public class TouchSurface : XRBaseInteractable
         }
     }
 
-    protected override void OnHoverExited(HoverExitEventArgs args)
+    protected override void OnSelectExited(SelectExitEventArgs args)
     {
-        base.OnHoverExited(args);
+        base.OnSelectExited(args);
 
         var interactor = args.interactorObject;
         if (m_InteractorTouches.TryGetValue(interactor, out var touchElement) && touchElement != null)
