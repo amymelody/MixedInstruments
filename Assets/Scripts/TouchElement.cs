@@ -2,49 +2,50 @@ using System.Collections.Generic;
 using Unity.XR.CoreUtils;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.XR.Interaction.Toolkit.Interactors;
 
 public class TouchElement : MonoBehaviour
 {
+    public const string k_TouchLayerName = "Touch";
+
     public UnityEvent onTouchStart;
     public UnityEvent onTouchEnd;
     public UnityEvent onFirstTouchStarting;
     public UnityEvent onLastTouchEnded;
 
-    HashSet<IXRInteractor> touchingInteractors = new HashSet<IXRInteractor>();
+    HashSet<Collider> touchingColliders = new HashSet<Collider>();
 
     void Awake()
     {
-        gameObject.SetLayerRecursively(LayerMask.NameToLayer(TouchSurface.k_TouchLayerName));
+        gameObject.SetLayerRecursively(LayerMask.NameToLayer(k_TouchLayerName));
     }
 
-    public void OnTouchStart(IXRInteractor interactor)
+    void OnTriggerEnter(Collider other)
     {
-        if (touchingInteractors.Count == 0)
-            OnFirstTouchStarting(interactor);
+        if (touchingColliders.Count == 0)
+            OnFirstTouchStarting();
 
-        touchingInteractors.Add(interactor);
+        touchingColliders.Add(other);
         onTouchStart.Invoke();
     }
 
-    public void OnTouchEnd(IXRInteractor interactor)
+    void OnTriggerExit(Collider other)
     {
-        if (!touchingInteractors.Contains(interactor))
+        if (!touchingColliders.Contains(other))
             return;
 
         onTouchEnd.Invoke();
-        touchingInteractors.Remove(interactor);
+        touchingColliders.Remove(other);
 
-        if (touchingInteractors.Count == 0)
-            OnLastTouchEnded(interactor);
+        if (touchingColliders.Count == 0)
+            OnLastTouchEnded();
     }
 
-    void OnFirstTouchStarting(IXRInteractor interactor)
+    void OnFirstTouchStarting()
     {
         onFirstTouchStarting.Invoke();
     }
 
-    void OnLastTouchEnded(IXRInteractor interactor)
+    void OnLastTouchEnded()
     {
         onLastTouchEnded.Invoke();
     }
