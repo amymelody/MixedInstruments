@@ -120,6 +120,8 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.Hands
             set => m_MenuPressed = value;
         }
 
+        public UnityEvent indexPinchStarted;
+
         /// <summary>
         /// The state of the system gesture.
         /// </summary>
@@ -218,11 +220,17 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.Hands
         void UpdateAimFlags(MetaAimFlags value, bool forceInvoke = false)
         {
             var hadMenuPressed = (m_AimFlags & MetaAimFlags.MenuPressed) != 0;
+            var hadIndexPinching = (m_AimFlags & MetaAimFlags.IndexPinching) != 0;
             m_AimFlags = value;
             var hasSystemGesture = (m_AimFlags & MetaAimFlags.SystemGesture) != 0;
             var hasMenuPressed = (m_AimFlags & MetaAimFlags.MenuPressed) != 0;
             var hasValid = (m_AimFlags & MetaAimFlags.Valid) != 0;
             var hasIndexPinching = (m_AimFlags & MetaAimFlags.IndexPinching) != 0;
+
+            if (!hadIndexPinching && hasIndexPinching)
+            {
+                indexPinchStarted?.Invoke();
+            }
 
             if (!hadMenuPressed && hasMenuPressed)
             {

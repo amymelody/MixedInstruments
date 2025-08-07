@@ -950,6 +950,14 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6064741687405065868, guid: 1782b89ac15b3c34cbc28f0ede57d895, type: 3}
+      propertyPath: 'm_StartingGroupMembers.Array.data[0]'
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 6064741687405065868, guid: 1782b89ac15b3c34cbc28f0ede57d895, type: 3}
+      propertyPath: m_StartingInteractionOverridesMap.Array.size
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6261351001507880391, guid: 1782b89ac15b3c34cbc28f0ede57d895, type: 3}
       propertyPath: m_NoValidHitProperties.m_EndWidth
       value: 0
@@ -1132,6 +1140,8 @@ PrefabInstance:
     m_RemovedGameObjects:
     - {fileID: 6365420661887424760, guid: 1782b89ac15b3c34cbc28f0ede57d895, type: 3}
     - {fileID: 2537374103385306330, guid: 1782b89ac15b3c34cbc28f0ede57d895, type: 3}
+    - {fileID: 6650462996446352770, guid: 1782b89ac15b3c34cbc28f0ede57d895, type: 3}
+    - {fileID: 9057957896852992411, guid: 1782b89ac15b3c34cbc28f0ede57d895, type: 3}
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 2319573313818967207, guid: 1782b89ac15b3c34cbc28f0ede57d895, type: 3}
       insertIndex: -1
