@@ -9,6 +9,9 @@ public class Tabletop : MonoBehaviour
     enum CalibrationState { Standby, Calibrating, Calibrated };
 
     [SerializeField]
+    bool m_IsolationTest;
+
+    [SerializeField]
     LineRenderer m_LineRendererPrefab;
 
     [SerializeField]
@@ -40,6 +43,16 @@ public class Tabletop : MonoBehaviour
 
     Transform m_PrimaryHandPokeTransform;
     MetaSystemGestureDetector m_SecondaryHandGestureDetector;
+
+    void Start()
+    {
+        if (m_IsolationTest)
+        {
+            StartCalibration(transform.position + new Vector3(0f, -0.05f + 0.001f, -0.4f));
+            AddCalibrationPoint(transform.position + new Vector3(-0.1f, -0.05f + 0.0011f, -0.34f));
+            AddCalibrationPoint(transform.position + new Vector3(0.05f, -0.05f + 0.0012f, -0.35f));
+        }
+    }
 
     public void SetupFromBoundingBox(ARBoundingBox boundingBox)
     {
@@ -115,7 +128,7 @@ public class Tabletop : MonoBehaviour
     {
         m_DebugText.text = "start calibration";
         m_CalibrationState = CalibrationState.Calibrating;
-        m_CalibrationLineRenderer = Instantiate(m_CalibrationLineRenderer);
+        m_CalibrationLineRenderer = Instantiate(m_LineRendererPrefab);
         m_CalibrationLineRenderer.loop = false;
         m_CalibrationLineRenderer.useWorldSpace = true;
         m_CalibrationLineRenderer.positionCount = 2;
@@ -125,6 +138,7 @@ public class Tabletop : MonoBehaviour
 
     void AddCalibrationPoint(Vector3 point)
     {
+        m_DebugText.text = "add point";
         var pointCount = m_CalibrationLineRenderer.positionCount;
         m_CalibrationLineRenderer.SetPosition(pointCount - 1, point);
         if (pointCount < 3)
@@ -149,14 +163,18 @@ public class Tabletop : MonoBehaviour
 
         transform.position = plane.ClosestPointOnPlane(transform.position);
         var forwardProjection = Vector3.ProjectOnPlane(transform.forward, plane.normal);
-        transform.LookAt(forwardProjection, plane.normal);
+        transform.LookAt(transform.position + forwardProjection * 100f, plane.normal);
 
+        m_DebugText.text = "calibrated";
         m_CalibrationState = CalibrationState.Calibrated;
         CleanupCalibration();
     }
 
     void CleanupCalibration()
     {
+        if (m_IsolationTest)
+            return;
+
         m_SecondaryHandGestureDetector.indexPinchStarted.RemoveListener(OnSecondaryIndexPinchStarted);
         if (m_CalibrationLineRenderer != null)
             Destroy(m_CalibrationLineRenderer);

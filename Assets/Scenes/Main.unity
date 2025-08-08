@@ -851,6 +851,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 1891937545068093953, guid: 1782b89ac15b3c34cbc28f0ede57d895, type: 3}
+      propertyPath: m_EnableFarCasting
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1891937545068093953, guid: 1782b89ac15b3c34cbc28f0ede57d895, type: 3}
       propertyPath: m_InteractionLayers.m_Bits
       value: 2
       objectReference: {fileID: 0}
@@ -860,7 +864,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1999546281898362441, guid: 1782b89ac15b3c34cbc28f0ede57d895, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2169099260431908165, guid: 1782b89ac15b3c34cbc28f0ede57d895, type: 3}
       propertyPath: m_Enabled
@@ -1019,12 +1023,20 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8716059389338199535, guid: 1782b89ac15b3c34cbc28f0ede57d895, type: 3}
+      propertyPath: m_EnableFarCasting
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8716059389338199535, guid: 1782b89ac15b3c34cbc28f0ede57d895, type: 3}
+      propertyPath: m_EnableNearCasting
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8716059389338199535, guid: 1782b89ac15b3c34cbc28f0ede57d895, type: 3}
       propertyPath: m_InteractionLayers.m_Bits
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 8722340282780434855, guid: 1782b89ac15b3c34cbc28f0ede57d895, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9109253531991367966, guid: 1782b89ac15b3c34cbc28f0ede57d895, type: 3}
       propertyPath: m_ObjectSpawner
@@ -1142,6 +1154,8 @@ PrefabInstance:
     - {fileID: 2537374103385306330, guid: 1782b89ac15b3c34cbc28f0ede57d895, type: 3}
     - {fileID: 6650462996446352770, guid: 1782b89ac15b3c34cbc28f0ede57d895, type: 3}
     - {fileID: 9057957896852992411, guid: 1782b89ac15b3c34cbc28f0ede57d895, type: 3}
+    - {fileID: 3024311964219231514, guid: 1782b89ac15b3c34cbc28f0ede57d895, type: 3}
+    - {fileID: 5425897798664211188, guid: 1782b89ac15b3c34cbc28f0ede57d895, type: 3}
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 2319573313818967207, guid: 1782b89ac15b3c34cbc28f0ede57d895, type: 3}
       insertIndex: -1
