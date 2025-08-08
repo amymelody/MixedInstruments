@@ -27,9 +27,6 @@ public class Tabletop : MonoBehaviour
     Transform m_FrontEdge;
 
     [SerializeField]
-    Keyboard m_KeyboardPrefab;
-
-    [SerializeField]
     Text m_DebugText;
 
     Vector3 m_InitialPosition;
@@ -44,10 +41,16 @@ public class Tabletop : MonoBehaviour
     Transform m_PrimaryHandPokeTransform;
     MetaSystemGestureDetector m_SecondaryHandGestureDetector;
 
+    InstrumentsSpawner m_InstrumentsSpawner;
+
     void Start()
     {
+        m_InstrumentsSpawner = GetComponent<InstrumentsSpawner>();
+
         if (m_IsolationTest)
         {
+            m_XScale = 1f;
+            m_ZScale = 1f;
             StartCalibration(transform.position + new Vector3(0f, -0.05f + 0.001f, -0.4f));
             AddCalibrationPoint(transform.position + new Vector3(-0.1f, -0.05f + 0.0011f, -0.34f));
             AddCalibrationPoint(transform.position + new Vector3(0.05f, -0.05f + 0.0012f, -0.35f));
@@ -168,6 +171,8 @@ public class Tabletop : MonoBehaviour
         m_DebugText.text = "calibrated";
         m_CalibrationState = CalibrationState.Calibrated;
         CleanupCalibration();
+
+        m_InstrumentsSpawner?.Spawn(m_XScale, m_ZScale);
     }
 
     void CleanupCalibration()

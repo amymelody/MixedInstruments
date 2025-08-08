@@ -691,6 +691,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4652032659388458414}
   - component: {fileID: 7167357609743540081}
+  - component: {fileID: 6154783094451770796}
   m_Layer: 0
   m_Name: Tabletop
   m_TagString: Untagged
@@ -728,13 +729,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5dadd9ef264e10f4d9635138764405b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_IsolationTest: 0
   m_LineRendererPrefab: {fileID: 8579509431696742391, guid: cc37de2394a8dfe409d55acc284c154c, type: 3}
   m_RightEdge: {fileID: 40585256564918479}
   m_BackEdge: {fileID: 2964102334174620717}
   m_LeftEdge: {fileID: 550348338036286583}
   m_FrontEdge: {fileID: 7833968981271996259}
-  m_KeyboardPrefab: {fileID: 8940893154065776411, guid: 33d672c2fffda4c47b2247b716c5860d, type: 3}
   m_DebugText: {fileID: 2899493951661977317}
+--- !u!114 &6154783094451770796
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2554750397192691946}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c1c7222fd830134785d35a6ed53dfcf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_KeyboardPrefab: {fileID: 8940893154065776411, guid: 33d672c2fffda4c47b2247b716c5860d, type: 3}
+  m_KeyboardFrontPadding: 0.06
 --- !u!1 &4186298612017762336
 GameObject:
   m_ObjectHideFlags: 0

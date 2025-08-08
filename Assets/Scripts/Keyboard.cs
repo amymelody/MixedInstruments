@@ -22,6 +22,29 @@ public class Keyboard : MonoBehaviour
     [SerializeField]
     float m_HalfOffset = 0.017f;
 
+    public Bounds GetRelativeBounds()
+    {
+        var octaveOffset = m_HalfOffset * 2f * 7f;
+        var whiteKeyBounds = GetWhiteKeyBounds();
+        var width = whiteKeyBounds.size.x + octaveOffset * 2f;
+        var centerX = octaveOffset;
+        var center = m_KeysRoot.localPosition + new Vector3(centerX, whiteKeyBounds.center.y, whiteKeyBounds.center.z);
+        return new Bounds(center, new Vector3(width, whiteKeyBounds.size.y, whiteKeyBounds.size.z));
+    }
+
+    Bounds GetWhiteKeyBounds()
+    {
+        var bounds = new Bounds();
+        foreach (var renderer in m_KeyWhiteLPrefab.GetComponentsInChildren<Renderer>())
+        {
+            var rendBounds = renderer.bounds;
+            rendBounds.center -= m_KeyWhiteLPrefab.transform.position;
+            bounds.Encapsulate(rendBounds);
+        }
+
+        return bounds;
+    }
+
     void Start()
     {
         var next = SpawnOctave(4, 0f);
