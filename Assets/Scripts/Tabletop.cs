@@ -54,15 +54,6 @@ public class Tabletop : MonoBehaviour
     void Start()
     {
         m_InstrumentsSpawner = GetComponent<InstrumentsSpawner>();
-
-        if (m_IsolationTest)
-        {
-            m_XScale = 1f;
-            m_ZScale = 1f;
-            StartCalibration(transform.position + new Vector3(0f, -0.05f + 0.001f, -0.4f));
-            AddCalibrationPoint(transform.position + new Vector3(-0.1f, -0.05f + 0.0011f, -0.34f));
-            AddCalibrationPoint(transform.position + new Vector3(0.05f, -0.05f + 0.0012f, -0.35f));
-        }
     }
 
     public void SetupFromBoundingBox(ARBoundingBox boundingBox)
@@ -164,7 +155,6 @@ public class Tabletop : MonoBehaviour
             return;
 
         m_LastPoint = point;
-        //m_DebugText.text = "add point";
         m_CalibrationLineRenderer.positionCount++;
         m_CalibrationLineRenderer.SetPosition(m_CalibrationLineRenderer.positionCount - 1, point);
     }
@@ -173,9 +163,8 @@ public class Tabletop : MonoBehaviour
     {
         var points = new Vector3[m_CalibrationLineRenderer.positionCount];
         m_CalibrationLineRenderer.GetPositions(points);
-        m_DebugText.text = string.Format("0: {0}\n1: {1}\n{2}: {3}", points[0].ToString("F3"), points[1].ToString("F3"), points.Length, points[points.Length - 1].ToString("F3"));
-        var plane = MathUtils.FitPlane(points);
-        m_DebugText.text += string.Format("\nplane normal: {0}\nplane distance: {1}", plane.normal.ToString("F3"), plane.distance);
+        var plane = MathUtils.FitPlane(points, out var discardedPointCount);
+        m_DebugText.text = string.Format("discarded points: {0}", discardedPointCount);
         if (Vector3.Dot(plane.normal, transform.up) < 0)
             plane.Flip();
 
@@ -191,9 +180,6 @@ public class Tabletop : MonoBehaviour
 
     void CleanupCalibration()
     {
-        if (m_IsolationTest)
-            return;
-
         m_SecondaryHandGestureDetector.indexPinchStarted.RemoveListener(OnSecondaryIndexPinchStarted);
         if (m_CalibrationLineRenderer != null)
             Destroy(m_CalibrationLineRenderer);
