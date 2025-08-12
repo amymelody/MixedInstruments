@@ -731,6 +731,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_IsolationTest: 0
   m_LineRendererPrefab: {fileID: 8579509431696742391, guid: cc37de2394a8dfe409d55acc284c154c, type: 3}
+  m_PointSampleFrequency: 0.05
+  m_MinPointSeparation: 0.002
   m_RightEdge: {fileID: 40585256564918479}
   m_BackEdge: {fileID: 2964102334174620717}
   m_LeftEdge: {fileID: 550348338036286583}

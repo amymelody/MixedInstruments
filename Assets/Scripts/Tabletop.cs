@@ -15,6 +15,12 @@ public class Tabletop : MonoBehaviour
     LineRenderer m_LineRendererPrefab;
 
     [SerializeField]
+    float m_PointSampleFrequency = 0.05f;
+
+    [SerializeField]
+    float m_MinPointSeparation = 0.002f;
+
+    [SerializeField]
     Transform m_RightEdge;
 
     [SerializeField]
@@ -37,6 +43,8 @@ public class Tabletop : MonoBehaviour
 
     CalibrationState m_CalibrationState;
     LineRenderer m_CalibrationLineRenderer;
+    float m_LastSampleTime;
+    Vector3 m_LastPoint;
 
     Transform m_PrimaryHandPokeTransform;
     MetaSystemGestureDetector m_SecondaryHandGestureDetector;
@@ -123,7 +131,7 @@ public class Tabletop : MonoBehaviour
         }
         else
         {
-            AddCalibrationPoint(pokePosition);
+            ConfirmCalibration();
         }
     }
 
@@ -134,33 +142,40 @@ public class Tabletop : MonoBehaviour
         m_CalibrationLineRenderer = Instantiate(m_LineRendererPrefab);
         m_CalibrationLineRenderer.loop = false;
         m_CalibrationLineRenderer.useWorldSpace = true;
-        m_CalibrationLineRenderer.positionCount = 2;
+        m_LastSampleTime = Time.time;
+        m_LastPoint = pokePosition;
+        m_CalibrationLineRenderer.positionCount = 1;
         m_CalibrationLineRenderer.SetPosition(0, pokePosition);
-        m_CalibrationLineRenderer.SetPosition(1, pokePosition);
+    }
+
+    void Update()
+    {
+        if (m_CalibrationState == CalibrationState.Calibrating &&
+            Time.time - m_LastSampleTime >= m_PointSampleFrequency)
+        {
+            AddCalibrationPoint(m_PrimaryHandPokeTransform.position);
+        }
     }
 
     void AddCalibrationPoint(Vector3 point)
     {
-        m_DebugText.text = "add point";
-        var pointCount = m_CalibrationLineRenderer.positionCount;
-        m_CalibrationLineRenderer.SetPosition(pointCount - 1, point);
-        if (pointCount < 3)
-        {
-            m_CalibrationLineRenderer.positionCount = 3;
-            m_CalibrationLineRenderer.SetPosition(2, point);
-            m_CalibrationLineRenderer.loop = true;
-        }
-        else
-        {
-            ConfirmCalibration();
-        }
+        m_LastSampleTime = Time.time;
+        if ((point - m_LastPoint).sqrMagnitude < m_MinPointSeparation * m_MinPointSeparation)
+            return;
+
+        m_LastPoint = point;
+        //m_DebugText.text = "add point";
+        m_CalibrationLineRenderer.positionCount++;
+        m_CalibrationLineRenderer.SetPosition(m_CalibrationLineRenderer.positionCount - 1, point);
     }
 
     void ConfirmCalibration()
     {
-        var points = new Vector3[3];
+        var points = new Vector3[m_CalibrationLineRenderer.positionCount];
         m_CalibrationLineRenderer.GetPositions(points);
-        var plane = new Plane(points[0], points[1], points[2]);
+        m_DebugText.text = string.Format("0: {0}\n1: {1}\n{2}: {3}", points[0].ToString("F3"), points[1].ToString("F3"), points.Length, points[points.Length - 1].ToString("F3"));
+        var plane = MathUtils.FitPlane(points);
+        m_DebugText.text += string.Format("\nplane normal: {0}\nplane distance: {1}", plane.normal.ToString("F3"), plane.distance);
         if (Vector3.Dot(plane.normal, transform.up) < 0)
             plane.Flip();
 
@@ -168,7 +183,6 @@ public class Tabletop : MonoBehaviour
         var forwardProjection = Vector3.ProjectOnPlane(transform.forward, plane.normal);
         transform.LookAt(transform.position + forwardProjection * 100f, plane.normal);
 
-        m_DebugText.text = "calibrated";
         m_CalibrationState = CalibrationState.Calibrated;
         CleanupCalibration();
 
@@ -185,21 +199,12 @@ public class Tabletop : MonoBehaviour
             Destroy(m_CalibrationLineRenderer);
     }
 
-    void Update()
-    {
-        if (m_CalibrationLineRenderer != null && m_CalibrationState == CalibrationState.Calibrating)
-        {
-            // update end of line
-            var pokePosition = m_PrimaryHandPokeTransform.position;
-            m_CalibrationLineRenderer.SetPosition(m_CalibrationLineRenderer.positionCount - 1, pokePosition);
-        }
-    }
-
     public void ResetCalibration()
     {
         if (m_CalibrationState != CalibrationState.Calibrated)
             CleanupCalibration();
 
+        m_InstrumentsSpawner?.Despawn();
         PrepareForCalibration();
     }
 }

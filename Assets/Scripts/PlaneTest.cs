@@ -11,7 +11,7 @@ public class PlaneTest : MonoBehaviour
             points.Add(child.position);
         }
 
-        var plane = MathUtils.FitPlane(points);
+        var plane = MathUtils.FitPlane(points.ToArray());
         var planeObj = GameObject.CreatePrimitive(PrimitiveType.Plane);
         var planePos = plane.ClosestPointOnPlane(transform.position);
         planeObj.transform.position = planePos;

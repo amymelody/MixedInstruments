@@ -1,14 +1,14 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 public static class MathUtils
 {
-    public static Plane FitPlane(List<Vector3> points)
+    public static Plane FitPlane(Vector3[] points)
     {
         /* https://www.jpe-innovations.com/precision-point/fit-plane-through-points/
         
         z = Ax + By + C
-        find A, B, and C, then take any 3 points and plug in x & y
+        find A, B, and C, then take any 3 points and plug in x & z (since we expect those to have more variance than y)
+        y = (z - Ax - C)/B
 
         where sum(f(x,y)) = summation of f(x,y) over all N points...
         [A]   [sum(x^2)  sum(xy)   sum(x)]^-1    [sum(xz)]
@@ -49,15 +49,15 @@ public static class MathUtils
             vector.z += point.z;
         }
 
-        matrix.m22 = points.Count;
+        matrix.m22 = points.Length;
 
         var coeff = matrix.inverse * vector;
         var point1 = points[0];
-        point1.z = coeff.x * point1.x + coeff.y * point1.y + coeff.z;
+        point1.y = (point1.z - coeff.x * point1.x - coeff.z) / coeff.y;
         var point2 = points[1];
-        point2.z = coeff.x * point2.x + coeff.y * point2.y + coeff.z;
+        point2.y = (point2.z - coeff.x * point2.x - coeff.z) / coeff.y;
         var point3 = points[2];
-        point3.z = coeff.x * point3.x + coeff.y * point3.y + coeff.z;
+        point3.y = (point3.z - coeff.x * point3.x - coeff.z) / coeff.y;
 
         return new Plane(point1, point2, point3);
     }
