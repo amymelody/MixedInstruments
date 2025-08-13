@@ -729,10 +729,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5dadd9ef264e10f4d9635138764405b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_IsolationTest: 0
-  m_LineRendererPrefab: {fileID: 8579509431696742391, guid: cc37de2394a8dfe409d55acc284c154c, type: 3}
-  m_PointSampleFrequency: 0.05
-  m_MinPointSeparation: 0.002
+  m_CalibrationInteractablePrefab: {fileID: 3297512809115662281, guid: dffc303cc145b7844a27afb099c0ea3c, type: 3}
+  m_CalibrationDelayTime: 1
   m_RightEdge: {fileID: 40585256564918479}
   m_BackEdge: {fileID: 2964102334174620717}
   m_LeftEdge: {fileID: 550348338036286583}

@@ -1,24 +1,17 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.XR.ARFoundation;
-using UnityEngine.XR.Interaction.Toolkit.Interactors;
-using UnityEngine.XR.Interaction.Toolkit.Samples.Hands;
+using UnityEngine.XR.Interaction.Toolkit;
+using UnityEngine.XR.Interaction.Toolkit.Interactables;
+using UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets;
 
 public class Tabletop : MonoBehaviour
 {
-    enum CalibrationState { Standby, Calibrating, Calibrated };
+    [SerializeField]
+    XRBaseInteractable m_CalibrationInteractablePrefab;
 
     [SerializeField]
-    bool m_IsolationTest;
-
-    [SerializeField]
-    LineRenderer m_LineRendererPrefab;
-
-    [SerializeField]
-    float m_PointSampleFrequency = 0.05f;
-
-    [SerializeField]
-    float m_MinPointSeparation = 0.002f;
+    float m_CalibrationDelayTime = 1f;
 
     [SerializeField]
     Transform m_RightEdge;
@@ -41,13 +34,9 @@ public class Tabletop : MonoBehaviour
     float m_XScale;
     float m_ZScale;
 
-    CalibrationState m_CalibrationState;
-    LineRenderer m_CalibrationLineRenderer;
-    float m_LastSampleTime;
-    Vector3 m_LastPoint;
-
-    Transform m_PrimaryHandPokeTransform;
-    MetaSystemGestureDetector m_SecondaryHandGestureDetector;
+    XRBaseInteractable m_CalibrationInteractable;
+    XRPokeFollowAffordance m_CalibrationPokeFollowAffordance;
+    float m_CalibrationStartTime = -1f;
 
     InstrumentsSpawner m_InstrumentsSpawner;
 
@@ -80,99 +69,45 @@ public class Tabletop : MonoBehaviour
         m_FrontEdge.SetXScale(m_XScale);
         m_FrontEdge.SetZPosition(m_ZScale * -0.5f);
 
-        foreach (var pokeInteractor in FindObjectsByType<XRPokeInteractor>(FindObjectsSortMode.None))
-        {
-            if (pokeInteractor.handedness == InteractorHandedness.Right)
-                m_PrimaryHandPokeTransform = pokeInteractor.attachTransform != null ? pokeInteractor.attachTransform : pokeInteractor.transform;
-            else if (pokeInteractor.handedness == InteractorHandedness.Left)
-                m_SecondaryHandGestureDetector = pokeInteractor.GetComponentInParent<MetaSystemGestureDetector>();
-        }
-
-        m_DebugText.text = string.Format("found right hand: {0}\nfound left hand: {1}", m_PrimaryHandPokeTransform != null, m_SecondaryHandGestureDetector != null);
-
-        PrepareForCalibration();
+        InitiateCalibration();
     }
 
-    void PrepareForCalibration()
+    void InitiateCalibration()
     {
-        m_CalibrationState = CalibrationState.Standby;
+        m_CalibrationStartTime = -1f;
+        m_CalibrationInteractable = Instantiate(m_CalibrationInteractablePrefab, transform);
+
+        m_CalibrationPokeFollowAffordance = m_CalibrationInteractable.GetComponentInChildren<XRPokeFollowAffordance>();
+        if (m_CalibrationPokeFollowAffordance == null)
+        {
+            Debug.LogError("Tabletop calibration interactable must have XRPokeFollowAffordance");
+            enabled = false;
+            return;
+        }
+
+        m_CalibrationInteractable.transform.localScale = new Vector3(m_XScale, m_CalibrationInteractable.transform.localScale.y, m_ZScale);
+
+        // Confirm calibration after first poke ends, with delay to accomodate adjustments
+        m_CalibrationInteractable.hoverExited.AddListener(OnCalibrationHoverEnded);
+
         transform.position = m_InitialPosition;
-        transform.rotation = m_InitialRotation;
-        m_SecondaryHandGestureDetector.indexPinchStarted.AddListener(OnSecondaryIndexPinchStarted);
-    }
-
-    void OnSecondaryIndexPinchStarted()
-    {
-        m_DebugText.text = "pinch";
-        var pokePosition = m_PrimaryHandPokeTransform.position;
-        if (m_CalibrationState == CalibrationState.Standby)
-        {
-            // make sure we're at the right table
-            var pokeX = pokePosition.x;
-            var pokeZ = pokePosition.z;
-            var initX = m_InitialPosition.x;
-            var initZ = m_InitialPosition.z;
-            var halfXScale = m_XScale * 0.5f;
-            var halfZScale = m_ZScale * 0.5f;
-            if (pokeX >= initX - halfXScale && pokeX <= initX + halfXScale &&
-                pokeZ >= initZ - halfZScale && pokeZ <= initZ + halfZScale)
-            {
-                StartCalibration(pokePosition);
-            }
-        }
-        else
-        {
-            ConfirmCalibration();
-        }
-    }
-
-    void StartCalibration(Vector3 pokePosition)
-    {
-        m_DebugText.text = "start calibration";
-        m_CalibrationState = CalibrationState.Calibrating;
-        m_CalibrationLineRenderer = Instantiate(m_LineRendererPrefab);
-        m_CalibrationLineRenderer.loop = false;
-        m_CalibrationLineRenderer.useWorldSpace = true;
-        m_LastSampleTime = Time.time;
-        m_LastPoint = pokePosition;
-        m_CalibrationLineRenderer.positionCount = 1;
-        m_CalibrationLineRenderer.SetPosition(0, pokePosition);
     }
 
     void Update()
     {
-        if (m_CalibrationState == CalibrationState.Calibrating &&
-            Time.time - m_LastSampleTime >= m_PointSampleFrequency)
-        {
-            AddCalibrationPoint(m_PrimaryHandPokeTransform.position);
-        }
+        if (m_CalibrationStartTime > 0f && Time.time - m_CalibrationStartTime >= m_CalibrationDelayTime)
+            ConfirmCalibration();
     }
 
-    void AddCalibrationPoint(Vector3 point)
+    void OnCalibrationHoverEnded(HoverExitEventArgs args)
     {
-        m_LastSampleTime = Time.time;
-        if ((point - m_LastPoint).sqrMagnitude < m_MinPointSeparation * m_MinPointSeparation)
-            return;
-
-        m_LastPoint = point;
-        m_CalibrationLineRenderer.positionCount++;
-        m_CalibrationLineRenderer.SetPosition(m_CalibrationLineRenderer.positionCount - 1, point);
+        m_CalibrationStartTime = Time.time;
     }
 
     void ConfirmCalibration()
     {
-        var points = new Vector3[m_CalibrationLineRenderer.positionCount];
-        m_CalibrationLineRenderer.GetPositions(points);
-        var plane = MathUtils.FitPlane(points, out var discardedPointCount);
-        m_DebugText.text = string.Format("discarded points: {0}", discardedPointCount);
-        if (Vector3.Dot(plane.normal, transform.up) < 0)
-            plane.Flip();
-
-        transform.position = plane.ClosestPointOnPlane(transform.position);
-        var forwardProjection = Vector3.ProjectOnPlane(transform.forward, plane.normal);
-        transform.LookAt(transform.position + forwardProjection * 100f, plane.normal);
-
-        m_CalibrationState = CalibrationState.Calibrated;
+        m_CalibrationStartTime = -1f;
+        transform.position = new Vector3(transform.position.x, m_CalibrationPokeFollowAffordance.pokeFollowTransform.position.y, transform.position.z);
         CleanupCalibration();
 
         m_InstrumentsSpawner?.Spawn(m_XScale, m_ZScale);
@@ -180,17 +115,14 @@ public class Tabletop : MonoBehaviour
 
     void CleanupCalibration()
     {
-        m_SecondaryHandGestureDetector.indexPinchStarted.RemoveListener(OnSecondaryIndexPinchStarted);
-        if (m_CalibrationLineRenderer != null)
-            Destroy(m_CalibrationLineRenderer);
+        if (m_CalibrationInteractable != null)
+            Destroy(m_CalibrationInteractable.gameObject);
     }
 
     public void ResetCalibration()
     {
-        if (m_CalibrationState != CalibrationState.Calibrated)
-            CleanupCalibration();
-
+        CleanupCalibration();
         m_InstrumentsSpawner?.Despawn();
-        PrepareForCalibration();
+        InitiateCalibration();
     }
 }
