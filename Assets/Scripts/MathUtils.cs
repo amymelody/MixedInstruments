@@ -3,6 +3,8 @@ using UnityEngine;
 
 public static class MathUtils
 {
+    public const float TwoPi = Mathf.PI * 2f;
+
     public static Plane FitPlane(Vector3[] points, out float discardedPointCount)
     {
         /* https://www.jpe-innovations.com/precision-point/fit-plane-through-points/
