@@ -1,3 +1,4 @@
+using Melanchall.DryWetMidi.MusicTheory;
 using UnityEngine;
 
 [RequireComponent(typeof(AudioSource))]
@@ -18,7 +19,7 @@ public class MIDIInstrument : MonoBehaviour
         if (channels > 2) // don't know what to do with more than 2 channels
             return;
 
-        var frequency = 261.63f; // C4
+        var frequency = Note.Get(NoteName.C, 4).GetFundamentalFrequency(); // C4
 
         var firstPhase = (float)(AudioSettings.dspTime % (1.0d / (double)frequency));
         var currentDataStep = 0;

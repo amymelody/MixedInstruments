@@ -1,3 +1,4 @@
+using Melanchall.DryWetMidi.MusicTheory;
 using UnityEngine;
 
 public class Keyboard : MonoBehaviour
@@ -55,16 +56,16 @@ public class Keyboard : MonoBehaviour
     float SpawnOctave(int octave, float xPos)
     {
         var next = SpawnKey(NoteName.C, octave, xPos);
-        next = SpawnKey(NoteName.Csharp, octave, next);
+        next = SpawnKey(NoteName.CSharp, octave, next);
         next = SpawnKey(NoteName.D, octave, next);
-        next = SpawnKey(NoteName.Dsharp, octave, next);
+        next = SpawnKey(NoteName.DSharp, octave, next);
         next = SpawnKey(NoteName.E, octave, next);
         next = SpawnKey(NoteName.F, octave, next);
-        next = SpawnKey(NoteName.Fsharp, octave, next);
+        next = SpawnKey(NoteName.FSharp, octave, next);
         next = SpawnKey(NoteName.G, octave, next);
-        next = SpawnKey(NoteName.Gsharp, octave, next);
+        next = SpawnKey(NoteName.GSharp, octave, next);
         next = SpawnKey(NoteName.A, octave, next);
-        next = SpawnKey(NoteName.Asharp, octave, next);
+        next = SpawnKey(NoteName.ASharp, octave, next);
         next = SpawnKey(NoteName.B, octave, next);
         return next;
     }
