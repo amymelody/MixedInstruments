@@ -23,6 +23,8 @@ public class Keyboard : MonoBehaviour
     [SerializeField]
     float m_HalfOffset = 0.017f;
 
+    MIDIInstrument m_Instrument;
+
     public Bounds GetRelativeBounds()
     {
         var octaveOffset = m_HalfOffset * 2f * 7f;
@@ -48,6 +50,8 @@ public class Keyboard : MonoBehaviour
 
     void Start()
     {
+        m_Instrument = GetComponentInChildren<MIDIInstrument>();
+
         var next = SpawnOctave(4, 0f);
         next = SpawnOctave(5, next);
         SpawnKey(NoteName.C, 6, next);
@@ -101,6 +105,12 @@ public class Keyboard : MonoBehaviour
         var key = Instantiate(prefab, m_KeysRoot);
         key.name = string.Format(k_KeyObjNameFormat, noteName, octave);
         key.transform.localPosition = Vector3.right * xPos;
+
+        var touchNote = key.GetComponent<TouchNote>();
+        touchNote.Note = Note.Get(noteName, octave);
+        touchNote.onNoteTouchOn += m_Instrument.NoteOn;
+        touchNote.onNoteTouchOff += m_Instrument.NoteOff;
+
         return xPos + nextOffset;
     }
 }
