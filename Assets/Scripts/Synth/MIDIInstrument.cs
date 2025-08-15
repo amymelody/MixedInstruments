@@ -54,7 +54,7 @@ public class MIDIInstrument : MonoBehaviour
             {
                 var sample = m_Synth.Sample(note, firstSampleNoteTime + (double)currentDataStep / m_SampleRate) * volume;
                 data[j] += sample;
-                data[j + 1] = sample;
+                data[j + 1] = data[j];
                 currentDataStep++;
             }
         }
