@@ -5,40 +5,36 @@ using UnityEngine;
 [RequireComponent(typeof(AudioSource))]
 public class MIDIInstrument : MonoBehaviour
 {
-    struct ActiveNoteInfo
-    {
-        public bool isActive;
-        public double onTime;
-        public double offTime;
-        public float fundamentalFrequency;
-    }
+    public float volume = 0.5f;
 
     int m_SampleRate;
 
-    ActiveNoteInfo[] m_ActiveNotes;
+    MidiNote[] m_Notes;
+    IMidiSynth m_Synth;
 
     void Awake()
     {
         m_SampleRate = AudioSettings.outputSampleRate;
 
-        m_ActiveNotes = new ActiveNoteInfo[SevenBitNumber.MaxValue];
-        var freqCount = NoteUtils.FundementalFrequencies.Length;
-        for (var i = 0; i < freqCount; i++)
+        m_Notes = new MidiNote[SevenBitNumber.MaxValue];
+        for (var i = 0; i < m_Notes.Length; i++)
         {
-            m_ActiveNotes[i].fundamentalFrequency = NoteUtils.FundementalFrequencies[i];
+            m_Notes[i].note = Note.Get((SevenBitNumber)i);
         }
+
+        m_Synth = new SubtractiveSynth();
     }
 
     public void NoteOn(Note note)
     {
-        m_ActiveNotes[note.NoteNumber].isActive = true;
-        m_ActiveNotes[note.NoteNumber].onTime = AudioSettings.dspTime;
+        m_Notes[note.NoteNumber].isActive = true;
+        m_Notes[note.NoteNumber].onTime = AudioSettings.dspTime;
     }
 
     public void NoteOff(Note note)
     {
-        m_ActiveNotes[note.NoteNumber].isActive = false;
-        m_ActiveNotes[note.NoteNumber].offTime = AudioSettings.dspTime;
+        m_Notes[note.NoteNumber].isActive = false;
+        m_Notes[note.NoteNumber].offTime = AudioSettings.dspTime;
     }
 
     void OnAudioFilterRead(float[] data, int channels)
@@ -46,29 +42,21 @@ public class MIDIInstrument : MonoBehaviour
         if (channels != 2) // currently only support for 2 channels
             return;
 
-        for (var i = 0; i < m_ActiveNotes.Length; i++)
+        for (var i = 0; i < m_Notes.Length; i++)
         {
-            var activeNote = m_ActiveNotes[i];
-            if (!activeNote.isActive)
+            var note = m_Notes[i];
+            if (!note.isActive)
                 continue;
 
-            var frequency = activeNote.fundamentalFrequency;
-            var noteTime = AudioSettings.dspTime - activeNote.onTime;
-            var currentPhaseStart = (float)(noteTime % (1.0d / (double)frequency));
+            var firstSampleNoteTime = AudioSettings.dspTime - note.onTime;
             var currentDataStep = 0;
             for (var j = 0; j < data.Length; j = j + 2)
             {
-                var phase = (currentPhaseStart + (float)currentDataStep / m_SampleRate) * frequency;
-                var sample = Sample(phase);
+                var sample = m_Synth.Sample(note, firstSampleNoteTime + (double)currentDataStep / m_SampleRate) * volume;
                 data[j] += sample;
                 data[j + 1] = sample;
                 currentDataStep++;
             }
         }
-    }
-
-    float Sample(float phase)
-    {
-        return Mathf.Sin(phase * MathUtils.TwoPi);
     }
 }
