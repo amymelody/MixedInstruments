@@ -124,8 +124,8 @@ MonoBehaviour:
   m_GestureEnded:
     m_PersistentCalls:
       m_Calls: []
-  m_MinimumHoldTime: 0.2
-  m_GestureDetectionInterval: 0.1
+  m_MinimumHoldTime: 0.01
+  m_GestureDetectionInterval: 0.006
   m_StaticGestures: []
   m_Highlight: {fileID: 0}
 --- !u!114 &1657400316864835862
@@ -197,8 +197,8 @@ MonoBehaviour:
   m_GestureEnded:
     m_PersistentCalls:
       m_Calls: []
-  m_MinimumHoldTime: 0.2
-  m_GestureDetectionInterval: 0.1
+  m_MinimumHoldTime: 0.01
+  m_GestureDetectionInterval: 0.006
   m_StaticGestures: []
   m_Highlight: {fileID: 0}
 --- !u!114 &1641560828195537930
@@ -372,8 +372,8 @@ MonoBehaviour:
   m_GestureEnded:
     m_PersistentCalls:
       m_Calls: []
-  m_MinimumHoldTime: 0.2
-  m_GestureDetectionInterval: 0.1
+  m_MinimumHoldTime: 0.01
+  m_GestureDetectionInterval: 0.006
   m_StaticGestures: []
   m_Highlight: {fileID: 0}
 --- !u!114 &1907615522592648831
@@ -553,8 +553,8 @@ MonoBehaviour:
   m_GestureEnded:
     m_PersistentCalls:
       m_Calls: []
-  m_MinimumHoldTime: 0.2
-  m_GestureDetectionInterval: 0.1
+  m_MinimumHoldTime: 0.01
+  m_GestureDetectionInterval: 0.006
   m_StaticGestures: []
   m_Highlight: {fileID: 0}
 --- !u!114 &4823224296982789233
@@ -701,8 +701,8 @@ MonoBehaviour:
   m_GestureEnded:
     m_PersistentCalls:
       m_Calls: []
-  m_MinimumHoldTime: 0.2
-  m_GestureDetectionInterval: 0.1
+  m_MinimumHoldTime: 0.01
+  m_GestureDetectionInterval: 0.006
   m_StaticGestures: []
   m_Highlight: {fileID: 0}
 --- !u!114 &2523618996675878189
@@ -774,8 +774,8 @@ MonoBehaviour:
   m_GestureEnded:
     m_PersistentCalls:
       m_Calls: []
-  m_MinimumHoldTime: 0.2
-  m_GestureDetectionInterval: 0.1
+  m_MinimumHoldTime: 0.01
+  m_GestureDetectionInterval: 0.006
   m_StaticGestures: []
   m_Highlight: {fileID: 0}
 --- !u!114 &1731768164386810000
@@ -847,8 +847,8 @@ MonoBehaviour:
   m_GestureEnded:
     m_PersistentCalls:
       m_Calls: []
-  m_MinimumHoldTime: 0.2
-  m_GestureDetectionInterval: 0.1
+  m_MinimumHoldTime: 0.01
+  m_GestureDetectionInterval: 0.006
   m_StaticGestures: []
   m_Highlight: {fileID: 0}
 --- !u!114 &1398196924969928707
@@ -920,8 +920,8 @@ MonoBehaviour:
   m_GestureEnded:
     m_PersistentCalls:
       m_Calls: []
-  m_MinimumHoldTime: 0.2
-  m_GestureDetectionInterval: 0.1
+  m_MinimumHoldTime: 0.01
+  m_GestureDetectionInterval: 0.006
   m_StaticGestures: []
   m_Highlight: {fileID: 0}
 --- !u!114 &2228345370073375500
@@ -1136,8 +1136,8 @@ MonoBehaviour:
   m_GestureEnded:
     m_PersistentCalls:
       m_Calls: []
-  m_MinimumHoldTime: 0.2
-  m_GestureDetectionInterval: 0.1
+  m_MinimumHoldTime: 0.01
+  m_GestureDetectionInterval: 0.006
   m_StaticGestures: []
   m_Highlight: {fileID: 0}
 --- !u!114 &2691889903373350754
@@ -1278,8 +1278,8 @@ MonoBehaviour:
   m_GestureEnded:
     m_PersistentCalls:
       m_Calls: []
-  m_MinimumHoldTime: 0.2
-  m_GestureDetectionInterval: 0.1
+  m_MinimumHoldTime: 0.01
+  m_GestureDetectionInterval: 0.006
   m_StaticGestures: []
   m_Highlight: {fileID: 0}
 --- !u!114 &2015330533393218501
@@ -1351,8 +1351,8 @@ MonoBehaviour:
   m_GestureEnded:
     m_PersistentCalls:
       m_Calls: []
-  m_MinimumHoldTime: 0.2
-  m_GestureDetectionInterval: 0.1
+  m_MinimumHoldTime: 0.01
+  m_GestureDetectionInterval: 0.006
   m_StaticGestures: []
   m_Highlight: {fileID: 0}
 --- !u!114 &7462962334429298308
@@ -1424,8 +1424,8 @@ MonoBehaviour:
   m_GestureEnded:
     m_PersistentCalls:
       m_Calls: []
-  m_MinimumHoldTime: 0.2
-  m_GestureDetectionInterval: 0.1
+  m_MinimumHoldTime: 0.01
+  m_GestureDetectionInterval: 0.006
   m_StaticGestures: []
   m_Highlight: {fileID: 0}
 --- !u!114 &7686643663795202997
@@ -1497,8 +1497,8 @@ MonoBehaviour:
   m_GestureEnded:
     m_PersistentCalls:
       m_Calls: []
-  m_MinimumHoldTime: 0.2
-  m_GestureDetectionInterval: 0.1
+  m_MinimumHoldTime: 0.01
+  m_GestureDetectionInterval: 0.006
   m_StaticGestures: []
   m_Highlight: {fileID: 0}
 --- !u!114 &3986103769099054576
@@ -1570,8 +1570,8 @@ MonoBehaviour:
   m_GestureEnded:
     m_PersistentCalls:
       m_Calls: []
-  m_MinimumHoldTime: 0.2
-  m_GestureDetectionInterval: 0.1
+  m_MinimumHoldTime: 0.01
+  m_GestureDetectionInterval: 0.006
   m_StaticGestures: []
   m_Highlight: {fileID: 0}
 --- !u!114 &1079094530205354744
@@ -1751,8 +1751,8 @@ MonoBehaviour:
   m_GestureEnded:
     m_PersistentCalls:
       m_Calls: []
-  m_MinimumHoldTime: 0.2
-  m_GestureDetectionInterval: 0.1
+  m_MinimumHoldTime: 0.01
+  m_GestureDetectionInterval: 0.006
   m_StaticGestures: []
   m_Highlight: {fileID: 0}
 --- !u!114 &1295375967527839281
@@ -1824,8 +1824,8 @@ MonoBehaviour:
   m_GestureEnded:
     m_PersistentCalls:
       m_Calls: []
-  m_MinimumHoldTime: 0.2
-  m_GestureDetectionInterval: 0.1
+  m_MinimumHoldTime: 0.01
+  m_GestureDetectionInterval: 0.006
   m_StaticGestures: []
   m_Highlight: {fileID: 0}
 --- !u!114 &5959988263413312382
