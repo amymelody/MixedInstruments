@@ -280,7 +280,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &3360551878069816023
 RectTransform:
   m_ObjectHideFlags: 0
@@ -750,6 +750,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_KeyboardPrefab: {fileID: 8940893154065776411, guid: 33d672c2fffda4c47b2247b716c5860d, type: 3}
   m_KeyboardFrontPadding: 0.06
+  m_PlayVolumePrefab: {fileID: 6305334904394393133, guid: 6af7a368eb16fbb448b7695d9be276cd, type: 3}
 --- !u!1 &4186298612017762336
 GameObject:
   m_ObjectHideFlags: 0

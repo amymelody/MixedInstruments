@@ -2,19 +2,14 @@ using Melanchall.DryWetMidi.Common;
 using Melanchall.DryWetMidi.MusicTheory;
 using UnityEngine;
 
-[RequireComponent(typeof(AudioSource))]
-public class MIDIInstrument : MonoBehaviour
+public class MidiAmp : Amp
 {
-    public float volume = 0.5f;
-
-    int m_SampleRate;
-
     MidiNote[] m_Notes;
     IMidiSynth m_Synth;
 
-    void Awake()
+    protected override void Awake()
     {
-        m_SampleRate = AudioSettings.outputSampleRate;
+        base.Awake();
 
         m_Notes = new MidiNote[SevenBitNumber.MaxValue];
         for (var i = 0; i < m_Notes.Length; i++)
@@ -52,7 +47,7 @@ public class MIDIInstrument : MonoBehaviour
             var currentDataStep = 0;
             for (var j = 0; j < data.Length; j = j + 2)
             {
-                var sample = m_Synth.Sample(note, firstSampleNoteTime + (double)currentDataStep / m_SampleRate) * volume;
+                var sample = m_Synth.Sample(note, firstSampleNoteTime + (double)currentDataStep / sampleRate) * volume;
                 data[j] += sample;
                 data[j + 1] = data[j];
                 currentDataStep++;

@@ -69,7 +69,8 @@ public class Tabletop : MonoBehaviour
         m_FrontEdge.SetXScale(m_XScale);
         m_FrontEdge.SetZPosition(m_ZScale * -0.5f);
 
-        InitiateCalibration();
+        //InitiateCalibration();
+        m_InstrumentsSpawner?.Spawn(m_XScale, m_ZScale);
     }
 
     void InitiateCalibration()
