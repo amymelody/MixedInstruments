@@ -134,7 +134,6 @@ public class PlayVolume : MonoBehaviour
             return;
 
         // TODO: should be exponential
-        // TODO: fix crackling
         amp.frequency = Mathf.Lerp(m_FrequencyRange.x, m_FrequencyRange.y, pointNormPos.y);
         amp.volume = pinch;
 
