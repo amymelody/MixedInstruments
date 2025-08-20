@@ -17,20 +17,24 @@ public class InstrumentsSpawner : MonoBehaviour
 
     public void Spawn(float tableWidth, float tableDepth)
     {
+        Debug.Log("TRY SPAWN");
         if (m_Spawned)
             return;
 
         SpawnPlayVolume(tableWidth, tableDepth);
+        Debug.Log("SPAWNED");
         m_Spawned = true;
     }
     
     public void Despawn()
     {
+        Debug.Log("TRY DESPAWN");
         if (!m_Spawned)
             return;
 
         m_Spawned = false;
         DespawnPlayVolume();
+        Debug.Log("DESPAWNED");
     }
 
     void SpawnKeyboard(float tableWidth, float tableDepth)
@@ -51,8 +55,7 @@ public class InstrumentsSpawner : MonoBehaviour
     void SpawnPlayVolume(float tableWidth, float tableDepth)
     {
         m_PlayVolume = Instantiate(m_PlayVolumePrefab, transform);
-        m_PlayVolume.width = tableWidth;
-        m_PlayVolume.depth = tableDepth;
+        m_PlayVolume.SetDimensions(tableWidth, tableDepth);
     }
 
     void DespawnPlayVolume()

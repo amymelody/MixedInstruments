@@ -40,6 +40,16 @@ public class Tabletop : MonoBehaviour
 
     InstrumentsSpawner m_InstrumentsSpawner;
 
+    InstrumentsSpawner instrumentsSpawner
+    {
+        get
+        {
+            if (m_InstrumentsSpawner == null)
+                m_InstrumentsSpawner = GetComponent<InstrumentsSpawner>();
+            return m_InstrumentsSpawner;
+        }
+    }
+
     void Start()
     {
         m_InstrumentsSpawner = GetComponent<InstrumentsSpawner>();
@@ -47,6 +57,7 @@ public class Tabletop : MonoBehaviour
 
     public void SetupFromBoundingBox(ARBoundingBox boundingBox)
     {
+        Debug.Log("SETUP FROM BOUNDING BOX");
         m_BoundingBox = boundingBox;
 
         var tablePose = boundingBox.pose;
@@ -68,9 +79,10 @@ public class Tabletop : MonoBehaviour
         m_LeftEdge.SetXPosition(m_XScale * -0.5f);
         m_FrontEdge.SetXScale(m_XScale);
         m_FrontEdge.SetZPosition(m_ZScale * -0.5f);
+        Debug.Log("SET TABLETOP DIMENSIONS");
 
         //InitiateCalibration();
-        m_InstrumentsSpawner?.Spawn(m_XScale, m_ZScale);
+        instrumentsSpawner.Spawn(m_XScale, m_ZScale);
     }
 
     void InitiateCalibration()
@@ -111,7 +123,7 @@ public class Tabletop : MonoBehaviour
         transform.position = new Vector3(transform.position.x, m_CalibrationPokeFollowAffordance.pokeFollowTransform.position.y, transform.position.z);
         CleanupCalibration();
 
-        m_InstrumentsSpawner?.Spawn(m_XScale, m_ZScale);
+        instrumentsSpawner.Spawn(m_XScale, m_ZScale);
     }
 
     void CleanupCalibration()
@@ -123,7 +135,7 @@ public class Tabletop : MonoBehaviour
     public void ResetCalibration()
     {
         CleanupCalibration();
-        m_InstrumentsSpawner?.Despawn();
+        instrumentsSpawner.Despawn();
         InitiateCalibration();
     }
 }
