@@ -1,27 +1,36 @@
+using Melanchall.DryWetMidi.MusicTheory;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class FreeOscillatorAmp : Amp
 {
     [SerializeField]
+    SerializedNote m_LowestNote = new() { NoteName = NoteName.C, Octave = 0 };
+
+    [SerializeField]
+    SerializedNote m_HighestNote = new() { NoteName = NoteName.C, Octave = 6 };
+
+
+    Vector2 m_FrequencyLogRange;
     float m_Frequency;
 
     public float frequency
     {
-        get
-        {
-            if (m_Frequency < 0f) m_Frequency = 0f;
-            return m_Frequency;
-        }
-        set
-        {
-            m_Frequency = Mathf.Max(value, 0f);
-        }
+        get => m_Frequency;
+        set => m_Frequency = math.max(value, 0f);
     }
 
     Oscillator m_Osc = new();
 
     float m_Phase;
     double m_ExpectedTime;
+
+    void OnEnable()
+    {
+        var lowFreq = NoteUtils.FundamentalFrequencies[NoteUtilities.GetNoteNumber(m_LowestNote.NoteName, m_LowestNote.Octave)];
+        var highFreq = NoteUtils.FundamentalFrequencies[NoteUtilities.GetNoteNumber(m_HighestNote.NoteName, m_HighestNote.Octave)];
+        m_FrequencyLogRange = new Vector2(math.log2(lowFreq), math.log2(highFreq));
+    }
 
     void OnAudioFilterRead(float[] data, int channels)
     {
@@ -44,5 +53,13 @@ public class FreeOscillatorAmp : Amp
             data[i] += sample;
             data[i + 1] = data[i];
         }
+
+        m_Phase = m_Phase % 1f;
+    }
+
+    public void LerpFrequency(float value)
+    {
+        var freqLog = math.lerp(m_FrequencyLogRange.x, m_FrequencyLogRange.y, value);
+        frequency = math.exp2(freqLog);
     }
 }

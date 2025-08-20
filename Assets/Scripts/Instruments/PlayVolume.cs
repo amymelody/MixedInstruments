@@ -27,12 +27,6 @@ public class PlayVolume : MonoBehaviour
     FreeOscillatorAmp m_RightAmp;
 
     [SerializeField]
-    SerializedNote m_LowestNote = new() { NoteName = NoteName.C, Octave = 0 };
-
-    [SerializeField]
-    SerializedNote m_HighestNote = new() { NoteName = NoteName.C, Octave = 6 };
-
-    [SerializeField]
     Transform m_VisualCube;
 
     public float width { get; private set; }
@@ -44,8 +38,6 @@ public class PlayVolume : MonoBehaviour
     XROrigin m_XROrigin;
     XRHandTrackingEvents m_LeftHandEvents;
     XRHandTrackingEvents m_RightHandEvents;
-
-    Vector2 m_FrequencyRange;
 
     Material m_CubeMaterial;
 
@@ -59,13 +51,6 @@ public class PlayVolume : MonoBehaviour
 
     void OnEnable()
     {
-        m_FrequencyRange = new Vector2(
-            NoteUtils.FundamentalFrequencies[NoteUtilities.GetNoteNumber(m_LowestNote.NoteName, m_LowestNote.Octave)],
-            NoteUtils.FundamentalFrequencies[NoteUtilities.GetNoteNumber(m_HighestNote.NoteName, m_HighestNote.Octave)]
-            );
-
-        Debug.Log("frequency range: " + m_FrequencyRange);
-
         m_XROrigin = FindAnyObjectByType<XROrigin>();
         foreach (var handEvents in FindObjectsByType<XRHandTrackingEvents>(FindObjectsSortMode.None))
         {
@@ -133,8 +118,7 @@ public class PlayVolume : MonoBehaviour
         if (!indexShape.TryGetPinch(out var pinch))
             return;
 
-        // TODO: should be exponential
-        amp.frequency = Mathf.Lerp(m_FrequencyRange.x, m_FrequencyRange.y, pointNormPos.y);
+        amp.LerpFrequency(pointNormPos.y);
         amp.volume = pinch;
 
         switch (eventArgs.hand.handedness)

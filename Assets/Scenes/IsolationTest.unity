@@ -453,6 +453,7 @@ GameObject:
   - component: {fileID: 1831842248}
   - component: {fileID: 1831842247}
   - component: {fileID: 1831842246}
+  - component: {fileID: 1831842249}
   m_Layer: 0
   m_Name: Free Osc Amp
   m_TagString: Untagged
@@ -473,7 +474,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   volume: 0.5
-  frequency: 0
+  m_LowestNote:
+    NoteName: 0
+    Octave: 2
+  m_HighestNote:
+    NoteName: 0
+    Octave: 6
 --- !u!82 &1831842247
 AudioSource:
   m_ObjectHideFlags: 0
@@ -586,6 +592,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1831842249
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1831842245}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cda300b897f7ad045987401b074f56c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_LerpValue: 0
 --- !u!1 &1944481510
 GameObject:
   m_ObjectHideFlags: 0
