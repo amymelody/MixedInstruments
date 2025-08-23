@@ -270,6 +270,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_TabletopPrefab: {fileID: 7167357609743540081, guid: 9d62e820c47173144b0135e4c17974c0, type: 3}
+  m_ModulePrefabs:
+  - {fileID: 5613193867549137959, guid: 52d73889cc995e748b17d365625b6b72, type: 3}
 --- !u!4 &1017708186
 Transform:
   m_ObjectHideFlags: 0

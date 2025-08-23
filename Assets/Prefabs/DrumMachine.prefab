@@ -1,0 +1,112 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2774104940766136173
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7905489472911640699}
+  m_Layer: 0
+  m_Name: Amp
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7905489472911640699
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2774104940766136173}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2777563891644009803}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8393781134157214102
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2777563891644009803}
+  - component: {fileID: 398519292565725130}
+  m_Layer: 0
+  m_Name: DrumMachine
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2777563891644009803
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8393781134157214102}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 7905489472911640699}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &398519292565725130
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8393781134157214102}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a5eb062b067ba64091f6073fe2862fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Samples:
+  - midiNote: 36
+    sample: {fileID: 8300000, guid: b40686eb47a87474b8a3ec510c6244aa, type: 3}
+    displayName: Kick
+  - midiNote: 38
+    sample: {fileID: 8300000, guid: e517b364519f28d4f9c83b40405adc05, type: 3}
+    displayName: Snare
+  - midiNote: 39
+    sample: {fileID: 8300000, guid: f72c8e4cc358a434591349d0a1c5504d, type: 3}
+    displayName: Clap
+  - midiNote: 42
+    sample: {fileID: 8300000, guid: f405ef24d16bee342b828f3f66e863fc, type: 3}
+    displayName: 
+  - midiNote: 43
+    sample: {fileID: 8300000, guid: 8a1c622194b4d3245905e7d00a359a78, type: 3}
+    displayName: Low Tom
+  - midiNote: 46
+    sample: {fileID: 8300000, guid: 00e250b535984d746b345603b60bd0da, type: 3}
+    displayName: 
+  - midiNote: 47
+    sample: {fileID: 8300000, guid: a4e3d1f3270602d4ca414e5d1f220602, type: 3}
+    displayName: Mid Tom
+  - midiNote: 50
+    sample: {fileID: 8300000, guid: f892c801096487948b9567aca0235612, type: 3}
+    displayName: Hi Tom
+  - midiNote: 56
+    sample: {fileID: 8300000, guid: b821b8f41fe04a54ba5ea3138f9b5333, type: 3}
+    displayName: 
+  - midiNote: 75
+    sample: {fileID: 8300000, guid: e186f50c4e6c2b34485de6f3cf4e6869, type: 3}
+    displayName: 
+  - midiNote: 37
+    sample: {fileID: 8300000, guid: e1a227f9056a3d847b0f9ccf6b3fa901, type: 3}
+    displayName: Rim

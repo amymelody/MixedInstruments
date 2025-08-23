@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.ARFoundation;
 
@@ -6,7 +7,11 @@ public class TabletopManager : MonoBehaviour
     [SerializeField]
     Tabletop m_TabletopPrefab;
 
+    [SerializeField]
+    List<Module> m_ModulePrefabs;
+
     ARBoundingBoxManager m_BoundingBoxManager;
+    int m_TabletopCount;
 
     void OnEnable()
     {
@@ -58,6 +63,8 @@ public class TabletopManager : MonoBehaviour
             return;
 
         var tabletop = Instantiate(m_TabletopPrefab);
-        tabletop.SetupFromBoundingBox(boundingBox);
+        var modulePrefab = m_TabletopCount < m_ModulePrefabs.Count ? m_ModulePrefabs[m_TabletopCount] : null;
+        m_TabletopCount++;
+        tabletop.SetupFromBoundingBox(boundingBox, modulePrefab);
     }
 }

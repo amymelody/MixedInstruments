@@ -36,28 +36,13 @@ public class Tabletop : MonoBehaviour
     float m_XScale;
     float m_ZScale;
 
+    Module m_Module;
+
     XRBaseInteractable m_CalibrationInteractable;
     XRPokeFollowAffordance m_CalibrationPokeFollowAffordance;
     bool m_Calibrating;
 
-    InstrumentsSpawner m_InstrumentsSpawner;
-
-    InstrumentsSpawner instrumentsSpawner
-    {
-        get
-        {
-            if (m_InstrumentsSpawner == null)
-                m_InstrumentsSpawner = GetComponent<InstrumentsSpawner>();
-            return m_InstrumentsSpawner;
-        }
-    }
-
-    void Start()
-    {
-        m_InstrumentsSpawner = GetComponent<InstrumentsSpawner>();
-    }
-
-    public void SetupFromBoundingBox(ARBoundingBox boundingBox)
+    public void SetupFromBoundingBox(ARBoundingBox boundingBox, Module modulePrefab)
     {
         m_BoundingBox = boundingBox;
         m_YOffsetKey = string.Format(k_TabletopYOffsetKeyFormat, boundingBox.trackableId);
@@ -90,12 +75,15 @@ public class Tabletop : MonoBehaviour
             transform.position += Vector3.up * yOffset;
         }
 
-        //InitiateCalibration();
-        //instrumentsSpawner.Spawn(m_XScale, m_ZScale);
+        if (modulePrefab != null)
+            m_Module = Instantiate(modulePrefab, transform);
     }
 
     public void ToggleCalibrationMode()
     {
+        if (m_BoundingBox == null)
+            return;
+
         if (m_Calibrating)
             ConfirmCalibration();
         else
@@ -105,6 +93,7 @@ public class Tabletop : MonoBehaviour
     void InitiateCalibration()
     {
         m_Calibrating = true;
+        if (m_Module != null) m_Module.gameObject.SetActive(false);
         m_AdjustButtonText.text = "Confirm";
         m_CalibrationInteractable = Instantiate(m_CalibrationInteractablePrefab, transform);
 
@@ -125,8 +114,6 @@ public class Tabletop : MonoBehaviour
         transform.position = m_InitialPosition + Vector3.up * yOffset;
         PlayerPrefs.SetFloat(m_YOffsetKey, yOffset);
         CleanupCalibration();
-
-        //instrumentsSpawner.Spawn(m_XScale, m_ZScale);
     }
 
     void CleanupCalibration()
@@ -135,12 +122,16 @@ public class Tabletop : MonoBehaviour
         m_AdjustButtonText.text = "Adjust";
         if (m_CalibrationInteractable != null)
             Destroy(m_CalibrationInteractable.gameObject);
+
+        if (m_Module != null) m_Module.gameObject.SetActive(true);
     }
 
     public void ResetCalibration()
     {
+        if (m_BoundingBox == null)
+            return;
+
         CleanupCalibration();
         transform.position = m_InitialPosition;
-        //instrumentsSpawner.Despawn();
     }
 }
