@@ -9,9 +9,9 @@ public class HandsInstrument : MonoBehaviour
     class GestureCallbackReceiver
     {
         public Note note;
-        public MidiAmp midiInstrument;
+        public MidiSynthAmp midiInstrument;
 
-        public GestureCallbackReceiver(Note note, MidiAmp midiInstrument)
+        public GestureCallbackReceiver(Note note, MidiSynthAmp midiInstrument)
         {
             this.note = note;
             this.midiInstrument = midiInstrument;
@@ -19,12 +19,12 @@ public class HandsInstrument : MonoBehaviour
         
         public void OnGesturePerformed()
         {
-            midiInstrument.NoteOn(note);
+            midiInstrument.NoteOn(note.NoteNumber);
         }
 
         public void OnGestureEnded()
         {
-            midiInstrument.NoteOff(note);
+            midiInstrument.NoteOff(note.NoteNumber);
         }
     }
 
@@ -32,7 +32,7 @@ public class HandsInstrument : MonoBehaviour
 
     void Awake()
     {
-        var midiInstrument = GetComponentInChildren<MidiAmp>();
+        var midiInstrument = GetComponentInChildren<MidiSynthAmp>();
         foreach (var gestureRecognizer in GetComponentsInChildren<StaticHandGesture>())
         {
             var noteTag = gestureRecognizer.GetComponent<NoteTag>();

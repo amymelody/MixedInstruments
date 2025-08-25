@@ -9,6 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7905489472911640699}
+  - component: {fileID: 6031997719635861160}
+  - component: {fileID: 6185329599837960608}
   m_Layer: 0
   m_Name: Amp
   m_TagString: Untagged
@@ -31,6 +33,116 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2777563891644009803}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!82 &6031997719635861160
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2774104940766136173}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!114 &6185329599837960608
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2774104940766136173}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6fce4153b7e6e7442880c86ecba9119a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  volume: 0.5
 --- !u!1 &8393781134157214102
 GameObject:
   m_ObjectHideFlags: 0
@@ -76,6 +188,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a5eb062b067ba64091f6073fe2862fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_Amp: {fileID: 6185329599837960608}
   m_Samples:
   - midiNote: 36
     sample: {fileID: 8300000, guid: b40686eb47a87474b8a3ec510c6244aa, type: 3}
@@ -88,13 +201,13 @@ MonoBehaviour:
     displayName: Clap
   - midiNote: 42
     sample: {fileID: 8300000, guid: f405ef24d16bee342b828f3f66e863fc, type: 3}
-    displayName: 
+    displayName: Closed Hi Hat
   - midiNote: 43
     sample: {fileID: 8300000, guid: 8a1c622194b4d3245905e7d00a359a78, type: 3}
     displayName: Low Tom
   - midiNote: 46
     sample: {fileID: 8300000, guid: 00e250b535984d746b345603b60bd0da, type: 3}
-    displayName: 
+    displayName: Open Hi Hat
   - midiNote: 47
     sample: {fileID: 8300000, guid: a4e3d1f3270602d4ca414e5d1f220602, type: 3}
     displayName: Mid Tom
@@ -110,3 +223,8 @@ MonoBehaviour:
   - midiNote: 37
     sample: {fileID: 8300000, guid: e1a227f9056a3d847b0f9ccf6b3fa901, type: 3}
     displayName: Rim
+  m_SampleButtonPrefab: {fileID: 5530312925630411569, guid: 4a0c7b374dee5574dbc474874c117ea0, type: 3}
+  m_ButtonSize: 0.05
+  m_ButtonSpacing: 0.01
+  m_ButtonRows: 2
+  m_ButtonColumns: 8

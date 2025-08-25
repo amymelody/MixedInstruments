@@ -7,8 +7,19 @@ public abstract class Amp : MonoBehaviour
 
     public int sampleRate { get; private set; }
 
+    AudioSource m_AudioSource;
+    public AudioSource audioSource
+    {
+        get
+        {
+            if (m_AudioSource == null) m_AudioSource = GetComponent<AudioSource>();
+            return m_AudioSource;
+        }
+    }
+
     protected virtual void Awake()
     {
+        m_AudioSource = GetComponent<AudioSource>();
         sampleRate = AudioSettings.outputSampleRate;
     }
 }

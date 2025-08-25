@@ -1,11 +1,11 @@
-using Melanchall.DryWetMidi.MusicTheory;
+using Melanchall.DryWetMidi.Common;
 
 public struct MidiNote
 {
     public bool isActive;
     public double onTime;
     public double offTime;
-    public Note note;
+    public SevenBitNumber noteNumber;
 }
 
 public interface IMidiSynth

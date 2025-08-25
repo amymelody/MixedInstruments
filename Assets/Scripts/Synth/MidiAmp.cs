@@ -1,11 +1,9 @@
 using Melanchall.DryWetMidi.Common;
-using Melanchall.DryWetMidi.MusicTheory;
 using UnityEngine;
 
 public class MidiAmp : Amp
 {
-    MidiNote[] m_Notes;
-    IMidiSynth m_Synth;
+    protected MidiNote[] m_Notes;
 
     protected override void Awake()
     {
@@ -14,44 +12,19 @@ public class MidiAmp : Amp
         m_Notes = new MidiNote[SevenBitNumber.MaxValue];
         for (var i = 0; i < m_Notes.Length; i++)
         {
-            m_Notes[i].note = Note.Get((SevenBitNumber)i);
+            m_Notes[i].noteNumber = (SevenBitNumber)i;
         }
-
-        m_Synth = new SubtractiveSynth();
     }
 
-    public void NoteOn(Note note)
+    public virtual void NoteOn(SevenBitNumber noteNumber)
     {
-        m_Notes[note.NoteNumber].isActive = true;
-        m_Notes[note.NoteNumber].onTime = AudioSettings.dspTime;
+        m_Notes[noteNumber].isActive = true;
+        m_Notes[noteNumber].onTime = AudioSettings.dspTime;
     }
 
-    public void NoteOff(Note note)
+    public virtual void NoteOff(SevenBitNumber noteNumber)
     {
-        m_Notes[note.NoteNumber].isActive = false;
-        m_Notes[note.NoteNumber].offTime = AudioSettings.dspTime;
-    }
-
-    void OnAudioFilterRead(float[] data, int channels)
-    {
-        if (channels != 2) // currently only support for 2 channels
-            return;
-
-        for (var i = 0; i < m_Notes.Length; i++)
-        {
-            var note = m_Notes[i];
-            if (!note.isActive)
-                continue;
-
-            var firstSampleNoteTime = AudioSettings.dspTime - note.onTime;
-            var currentDataStep = 0;
-            for (var j = 0; j < data.Length; j = j + 2)
-            {
-                var sample = m_Synth.Sample(note, firstSampleNoteTime + (double)currentDataStep / sampleRate) * volume;
-                data[j] += sample;
-                data[j + 1] = data[j];
-                currentDataStep++;
-            }
-        }
+        m_Notes[noteNumber].isActive = false;
+        m_Notes[noteNumber].offTime = AudioSettings.dspTime;
     }
 }
