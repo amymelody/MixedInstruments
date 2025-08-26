@@ -6,7 +6,7 @@ using UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets;
 
 public class Tabletop : MonoBehaviour
 {
-    const string k_TabletopYOffsetKeyFormat = "MixedInstruments/Tabletop/{0}/YOffset";
+    const string k_TabletopYOffsetKeyFormat = AppConstants.PlayerPrefsPrefix + "Tabletop/{0}/YOffset";
 
     [SerializeField]
     XRBaseInteractable m_CalibrationInteractablePrefab;
