@@ -1,7 +1,6 @@
 using UnityEngine;
 
 [RequireComponent(typeof(AudioSource))]
-[RequireComponent(typeof(TimingSettings))]
 public class Metronome : Amp
 {
     public int signatureHi = 4;

@@ -13,7 +13,7 @@ public enum Quantization
     ThirtySecond
 }
 
-public class TimingSettings : MonoBehaviour
+public static class TimingSettings
 {
     public const string PlayerPrefsPrefix = AppConstants.PlayerPrefsPrefix + "Timing/";
 
@@ -34,8 +34,8 @@ public class TimingSettings : MonoBehaviour
     }
 
     const string k_RecordLeadInKey = PlayerPrefsPrefix + "RecordLeadIn";
-    static int k_RecordLeadIn;
-    public static int recordLeadIn
+    static bool k_RecordLeadIn;
+    public static bool recordLeadIn
     {
         get => k_RecordLeadIn;
         set => k_RecordLeadIn = value;
@@ -49,19 +49,22 @@ public class TimingSettings : MonoBehaviour
         set => k_PlayMetronome = value;
     }
 
-    void Awake()
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+    static void OnBeforeSceneLoad()
     {
         k_Bpm = PlayerPrefs.HasKey(k_BpmKey) ? PlayerPrefs.GetFloat(k_BpmKey) : 120f;
         k_RecordQuantization = PlayerPrefs.HasKey(k_RecordQuantizationKey) ? (Quantization)PlayerPrefs.GetInt(k_RecordQuantizationKey) : Quantization.None;
-        k_RecordLeadIn = PlayerPrefs.HasKey(k_RecordLeadInKey) ? PlayerPrefs.GetInt(k_RecordLeadInKey) : 0;
+        k_RecordLeadIn = PlayerPrefs.HasKey(k_RecordLeadInKey) ? PlayerPrefs.GetInt(k_RecordLeadInKey) > 0 : false;
         k_PlayMetronome = PlayerPrefs.HasKey(k_PlayMetronomeKey) ? PlayerPrefs.GetInt(k_PlayMetronomeKey) > 0 : false;
+
+        Application.quitting += OnApplicationQuitting;
     }
 
-    void OnDestroy()
+    static void OnApplicationQuitting()
     {
         PlayerPrefs.SetFloat(k_BpmKey, k_Bpm);
         PlayerPrefs.SetInt(k_RecordQuantizationKey, (int)k_RecordQuantization);
-        PlayerPrefs.SetInt(k_RecordLeadInKey, k_RecordLeadIn);
+        PlayerPrefs.SetInt(k_RecordLeadInKey, k_RecordLeadIn ? 1 : 0);
         PlayerPrefs.SetInt(k_PlayMetronomeKey, k_PlayMetronome ? 1 : 0);
     }
 }
