@@ -7,6 +7,8 @@ public abstract class Amp : MonoBehaviour
 
     public int sampleRate { get; private set; }
 
+    public float sampleTimeStep { get; private set; }
+
     AudioSource m_AudioSource;
     public AudioSource audioSource
     {
@@ -21,5 +23,6 @@ public abstract class Amp : MonoBehaviour
     {
         m_AudioSource = GetComponent<AudioSource>();
         sampleRate = AudioSettings.outputSampleRate;
+        sampleTimeStep = 1f / sampleRate;
     }
 }

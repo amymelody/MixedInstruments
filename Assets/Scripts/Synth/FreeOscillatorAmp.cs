@@ -39,16 +39,20 @@ public class FreeOscillatorAmp : Amp
 
         // sync up with DSP time
         var timeDiff = AudioSettings.dspTime - m_ExpectedTime;
+        OnBeforeDSPTimeSync(timeDiff);
         m_Phase += (float)timeDiff * frequency;
-        if (m_Phase < 0) m_Phase = 1f - m_Phase;
+        if (m_Phase < 0)
+            m_Phase = 1f - m_Phase;
+        else if (m_Phase > 1f)
+            m_Phase %= 1f;
+
         m_ExpectedTime = AudioSettings.dspTime + ((double)data.Length / channels) / sampleRate;
 
         // keeping track of persistent phase handles changes to frequency
-        var timeStep = 1f / sampleRate;
-        var phaseStep = timeStep * frequency;
         for (var i = 0; i < data.Length; i = i + 2)
         {
-            m_Phase += phaseStep;
+            OnBeforeSample();
+            m_Phase += sampleTimeStep * frequency;
             var sample = m_Osc.Sample(m_Phase) * volume;
             data[i] += sample;
             data[i + 1] = data[i];
@@ -56,6 +60,10 @@ public class FreeOscillatorAmp : Amp
 
         m_Phase = m_Phase % 1f;
     }
+
+    protected virtual void OnBeforeDSPTimeSync(double diffFromExpectedTime) { }
+
+    protected virtual void OnBeforeSample() { }
 
     public void LerpFrequency(float value)
     {
