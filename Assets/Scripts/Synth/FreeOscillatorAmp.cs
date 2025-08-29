@@ -30,6 +30,7 @@ public class FreeOscillatorAmp : Amp
         var lowFreq = NoteUtils.FundamentalFrequencies[NoteUtilities.GetNoteNumber(m_LowestNote.NoteName, m_LowestNote.Octave)];
         var highFreq = NoteUtils.FundamentalFrequencies[NoteUtilities.GetNoteNumber(m_HighestNote.NoteName, m_HighestNote.Octave)];
         m_FrequencyLogRange = new Vector2(math.log2(lowFreq), math.log2(highFreq));
+        m_ExpectedTime = AudioSettings.dspTime;
     }
 
     void OnAudioFilterRead(float[] data, int channels)

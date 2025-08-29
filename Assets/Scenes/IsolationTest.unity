@@ -809,10 +809,10 @@ MonoBehaviour:
   volume: 0.5
   m_LowestNote:
     NoteName: 0
-    Octave: 2
+    Octave: 3
   m_HighestNote:
     NoteName: 0
-    Octave: 6
+    Octave: 5
 --- !u!82 &1831842247
 AudioSource:
   m_ObjectHideFlags: 0
@@ -937,7 +937,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cda300b897f7ad045987401b074f56c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_LerpValue: 0
+  m_LerpValue: 0.5
 --- !u!1 &1837031268
 GameObject:
   m_ObjectHideFlags: 0
