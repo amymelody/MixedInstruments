@@ -15,22 +15,22 @@ public class TouchNote : MonoBehaviour
     void Start()
     {
         m_TouchElement = GetComponent<TouchElement>();
-        m_TouchElement.onFirstTouchStarting.AddListener(OnFirstTouchStarting);
-        m_TouchElement.onLastTouchEnded.AddListener(OnLastTouchEnded);
+        m_TouchElement.onTouchStart.AddListener(OnTouchStart);
+        m_TouchElement.onTouchEnd.AddListener(OnTouchEnd);
     }
 
     void OnDestroy()
     {
-        m_TouchElement.onFirstTouchStarting.RemoveListener(OnFirstTouchStarting);
-        m_TouchElement.onLastTouchEnded.RemoveListener(OnLastTouchEnded);
+        m_TouchElement.onTouchStart.RemoveListener(OnTouchStart);
+        m_TouchElement.onTouchEnd.RemoveListener(OnTouchEnd);
     }
 
-    void OnFirstTouchStarting()
+    void OnTouchStart(TouchElement touchElement)
     {
         onNoteTouchOn?.Invoke(Note);
     }
 
-    void OnLastTouchEnded()
+    void OnTouchEnd(TouchElement touchElement)
     {
         onNoteTouchOff?.Invoke(Note);
     }

@@ -224,7 +224,7 @@ MonoBehaviour:
     sample: {fileID: 8300000, guid: e1a227f9056a3d847b0f9ccf6b3fa901, type: 3}
     displayName: Rim
   m_SampleButtonPrefab: {fileID: 5530312925630411569, guid: 4a0c7b374dee5574dbc474874c117ea0, type: 3}
-  m_ButtonSize: 0.05
-  m_ButtonSpacing: 0.01
+  m_ButtonSize: 0.075
+  m_ButtonSpacing: 0.02
   m_ButtonRows: 2
-  m_ButtonColumns: 8
+  m_ButtonColumns: 6

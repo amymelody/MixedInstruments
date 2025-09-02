@@ -2,8 +2,6 @@ using Melanchall.DryWetMidi.Standards;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.XR.Interaction.Toolkit;
-using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
 [Serializable]
 public class DrumSample
@@ -36,8 +34,6 @@ public class DrumMachine : Instrument
     [SerializeField]
     int m_ButtonColumns = 8;
 
-    Dictionary<IXRInteractable, SampleButton> m_InteractableToButton = new Dictionary<IXRInteractable, SampleButton>();
-
     void Start()
     {
         SetUpAmp();
@@ -55,7 +51,6 @@ public class DrumMachine : Instrument
 
     void SpawnButtons()
     {
-        m_InteractableToButton.Clear();
         if (m_ButtonRows <= 0) m_ButtonRows = 1;
         if (m_ButtonColumns <= 0) m_ButtonColumns = 1;
 
@@ -79,9 +74,8 @@ public class DrumMachine : Instrument
                     button.midiNoteNumber = sample.midiNote.AsSevenBitNumber();
                     var useDisplayName = sample.displayName != null && sample.displayName.Length > 0;
                     button.text.text = useDisplayName ? sample.displayName : sample.midiNote.ToString();
-                    button.interactable.selectEntered.AddListener(OnSampleButtonPressed);
-                    button.interactable.selectExited.AddListener(OnSampleButtonReleased);
-                    m_InteractableToButton[button.interactable] = button;
+                    button.onTouchStart.AddListener(OnSampleButtonPressed);
+                    button.onTouchEnd.AddListener(OnSampleButtonReleased);
                 }
                 else
                 {
@@ -93,17 +87,17 @@ public class DrumMachine : Instrument
         }
     }
 
-    void OnSampleButtonPressed(SelectEnterEventArgs args)
+    void OnSampleButtonPressed(TouchElement touchElement)
     {
-        if (!isActiveAndEnabled || !m_InteractableToButton.TryGetValue(args.interactableObject, out var sampleButton))
+        if (!isActiveAndEnabled || touchElement is not SampleButton sampleButton)
             return;
 
         m_Amp.NoteOn(sampleButton.midiNoteNumber);
     }
 
-    void OnSampleButtonReleased(SelectExitEventArgs args)
+    void OnSampleButtonReleased(TouchElement touchElement)
     {
-        if (!isActiveAndEnabled || !m_InteractableToButton.TryGetValue(args.interactableObject, out var sampleButton))
+        if (!isActiveAndEnabled || touchElement is not SampleButton sampleButton)
             return;
 
         m_Amp.NoteOff(sampleButton.midiNoteNumber);

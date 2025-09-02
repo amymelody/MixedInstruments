@@ -1,52 +1,54 @@
-using System.Collections.Generic;
 using Unity.XR.CoreUtils;
 using UnityEngine;
 using UnityEngine.Events;
 
+[RequireComponent(typeof(Rigidbody))]
 public class TouchElement : MonoBehaviour
 {
-    public const string k_TouchLayerName = "Touch";
+    public const string k_TouchLayerName = "TouchElement";
 
-    public UnityEvent onTouchStart;
-    public UnityEvent onTouchEnd;
-    public UnityEvent onFirstTouchStarting;
-    public UnityEvent onLastTouchEnded;
+    [SerializeField]
+    BoxCollider m_BoxCollider;
 
-    HashSet<Collider> touchingColliders = new HashSet<Collider>();
+    public UnityEvent<TouchElement> onTouchStart;
+    public UnityEvent<TouchElement> onTouchEnd;
+
+    Collider m_TouchingCollider;
 
     void Awake()
     {
         gameObject.SetLayerRecursively(LayerMask.NameToLayer(k_TouchLayerName));
     }
 
+    void Update()
+    {
+        if (m_TouchingCollider != null)
+        {
+            var colliderTrans = m_BoxCollider.transform;
+            var top = colliderTrans.localPosition.y + m_BoxCollider.center.y + m_BoxCollider.size.y * 0.5f;
+            var pointerY = colliderTrans.parent.InverseTransformPoint(m_TouchingCollider.transform.position).y;
+            if (pointerY < top)
+            {
+                colliderTrans.localPosition += Vector3.up * (pointerY - top);
+            }
+        }
+    }
+
     void OnTriggerEnter(Collider other)
     {
-        if (touchingColliders.Count == 0)
-            OnFirstTouchStarting();
+        if (m_TouchingCollider != null)
+            return;
 
-        touchingColliders.Add(other);
-        onTouchStart.Invoke();
+        m_TouchingCollider = other;
+        onTouchStart.Invoke(this);
     }
 
     void OnTriggerExit(Collider other)
     {
-        if (!touchingColliders.Contains(other))
+        if (other != m_TouchingCollider)
             return;
 
-        onTouchEnd.Invoke();
-        touchingColliders.Remove(other);
-
-        if (touchingColliders.Count == 0)
-            OnLastTouchEnded();
-    }
-
-    void OnFirstTouchStarting()
-    {
-        onFirstTouchStarting.Invoke();
-    }
-
-    void OnLastTouchEnded()
-    {
-        onLastTouchEnded.Invoke();
+        onTouchEnd.Invoke(this);
+        m_TouchingCollider = null;
     }
 }
