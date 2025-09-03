@@ -29,12 +29,13 @@ public class Tabletop : MonoBehaviour
     [SerializeField]
     Text m_DebugText;
 
+    public float width { get; private set; }
+    public float depth { get; private set; }
+
     Vector3 m_InitialPosition;
     Quaternion m_InitialRotation;
     ARBoundingBox m_BoundingBox;
     string m_YOffsetKey;
-    float m_XScale;
-    float m_ZScale;
 
     Module m_Module;
 
@@ -56,16 +57,16 @@ public class Tabletop : MonoBehaviour
         m_InitialPosition = top;
         m_InitialRotation = tablePose.rotation;
 
-        m_XScale = boundingBox.size.x;
-        m_ZScale = boundingBox.size.z;
-        m_RightEdge.SetZScale(m_ZScale);
-        m_RightEdge.SetXPosition(m_XScale * 0.5f);
-        m_BackEdge.SetXScale(m_XScale);
-        m_BackEdge.SetZPosition(m_ZScale * 0.5f);
-        m_LeftEdge.SetZScale(m_ZScale);
-        m_LeftEdge.SetXPosition(m_XScale * -0.5f);
-        m_FrontEdge.SetXScale(m_XScale);
-        m_FrontEdge.SetZPosition(m_ZScale * -0.5f);
+        width = boundingBox.size.x;
+        depth = boundingBox.size.z;
+        m_RightEdge.SetZScale(depth);
+        m_RightEdge.SetXPosition(width * 0.5f);
+        m_BackEdge.SetXScale(width);
+        m_BackEdge.SetZPosition(depth * 0.5f);
+        m_LeftEdge.SetZScale(depth);
+        m_LeftEdge.SetXPosition(width * -0.5f);
+        m_FrontEdge.SetXScale(width);
+        m_FrontEdge.SetZPosition(depth * -0.5f);
         Debug.Log("SET TABLETOP DIMENSIONS");
 
         if (PlayerPrefs.HasKey(m_YOffsetKey))
@@ -76,7 +77,10 @@ public class Tabletop : MonoBehaviour
         }
 
         if (modulePrefab != null)
+        {
             m_Module = Instantiate(modulePrefab, transform);
+            m_Module.AttachToTabletop(this);
+        }
     }
 
     public void ToggleCalibrationMode()
@@ -105,7 +109,7 @@ public class Tabletop : MonoBehaviour
             return;
         }
 
-        m_CalibrationInteractable.transform.localScale = new Vector3(m_XScale, m_CalibrationInteractable.transform.localScale.y, m_ZScale);
+        m_CalibrationInteractable.transform.localScale = new Vector3(width, m_CalibrationInteractable.transform.localScale.y, depth);
     }
 
     void ConfirmCalibration()
