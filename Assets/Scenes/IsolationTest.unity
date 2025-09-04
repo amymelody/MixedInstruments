@@ -935,6 +935,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3392103105589877817, guid: 9872c8ea7bdbb504388e8020d91ad107, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.197
+      objectReference: {fileID: 0}
     - target: {fileID: 4391277757716953303, guid: 9872c8ea7bdbb504388e8020d91ad107, type: 3}
       propertyPath: m_Name
       value: DrumTrack
@@ -1082,7 +1086,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2080586796122283774, guid: 198f43de861411340a69500c531dd04f, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.606
       objectReference: {fileID: 0}
     - target: {fileID: 2080586796122283774, guid: 198f43de861411340a69500c531dd04f, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1432,7 +1436,7 @@ Transform:
   m_GameObject: {fileID: 1944481510}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.321}
+  m_LocalPosition: {x: 0, y: 0.606, z: -0.321}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

@@ -119,7 +119,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8393781134157214102, guid: edfd8cc2a0ef57e4185660e516a8addf, type: 3}
       propertyPath: m_Name
-      value: DrumMachine
+      value: Drums
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

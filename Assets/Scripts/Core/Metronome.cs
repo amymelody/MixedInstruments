@@ -1,3 +1,4 @@
+using Melanchall.DryWetMidi.Core;
 using UnityEngine;
 
 public class Metronome : FreeOscillatorAmp
@@ -13,43 +14,49 @@ public class Metronome : FreeOscillatorAmp
 
     public float barPhase { get; private set; }
 
+    public long bar { get; private set; }
+
+    public long tick { get; private set; }
+
+    int m_TimeSignatureNumerator;
+    int m_TimeSignatureDenominator;
     float m_BarPhaseStep;
     float m_BarDuration;
     float m_BeatDuration;
     float m_BeatBarFraction;
+    float m_QuarterPerBar;
+    long m_TickAtStartOfBar;
 
     protected override void Awake()
     {
         base.Awake();
 
-        var bpm = TimingSettings.bpm;
-        var timeSignature = TimingSettings.timeSignature;
-        var beatsPerBar = timeSignature.numerator;
-        var beatToQuarterRatio = 4f / timeSignature.denominator;
-        m_BeatDuration = beatToQuarterRatio * 60f / bpm;
-        m_BarDuration = m_BeatDuration * beatsPerBar;
+        m_TimeSignatureNumerator = TimingSettings.timeSignature.numerator;
+        m_TimeSignatureDenominator = TimingSettings.timeSignature.denominator;
+        UpdateTiming();
+        bar = (long)(AudioSettings.dspTime / m_BarDuration);
         barPhase = (float)(AudioSettings.dspTime % m_BarDuration) / m_BarDuration;
+        m_TickAtStartOfBar = (long)((float)(m_QuarterPerBar * bar) * TicksPerQuarterNoteTimeDivision.DefaultTicksPerQuarterNote);
+        tick = m_TickAtStartOfBar + (long)((float)(m_QuarterPerBar * barPhase) * TicksPerQuarterNoteTimeDivision.DefaultTicksPerQuarterNote);
     }
 
-    protected override void OnBeforeDSPTimeSync(double diffFromExpectedTime)
+    void UpdateTiming()
     {
-        base.OnBeforeDSPTimeSync(diffFromExpectedTime);
-
         var bpm = TimingSettings.bpm;
-        var timeSignature = TimingSettings.timeSignature;
-        var beatsPerBar = timeSignature.numerator;
-        var beatToQuarterRatio = 4f / timeSignature.denominator;
-        m_BeatDuration = beatToQuarterRatio * 60f / bpm;
+        var beatsPerBar = m_TimeSignatureNumerator;
+        var quarterDuration = 60f / bpm;
+        var beatToQuarterRatio = 4f / m_TimeSignatureDenominator;
+        m_QuarterPerBar = beatToQuarterRatio * beatsPerBar;
+        m_BeatDuration = beatToQuarterRatio * quarterDuration;
         m_BarDuration = m_BeatDuration * beatsPerBar;
         m_BeatBarFraction = 1f / beatsPerBar;
-        var barPhaseDiff = (float)diffFromExpectedTime / m_BarDuration;
-        barPhase += barPhaseDiff;
-        if (barPhase < 0)
-            barPhase = 1f - barPhase;
-        else if (barPhase > 1f)
-            barPhase %= 1f;
-
         m_BarPhaseStep = sampleTimeStep / m_BarDuration;
+    }
+
+    protected override void OnBeforeReadSamples()
+    {
+        base.OnBeforeReadSamples();
+        UpdateTiming();
     }
 
     protected override void OnBeforeSample()
@@ -72,6 +79,22 @@ public class Metronome : FreeOscillatorAmp
             volume = 0f;
         }
 
-        barPhase = (barPhase + m_BarPhaseStep) % 1f;
+        barPhase += m_BarPhaseStep;
+        tick = m_TickAtStartOfBar + (long)((float)(m_QuarterPerBar * barPhase) * TicksPerQuarterNoteTimeDivision.DefaultTicksPerQuarterNote);
+        if (barPhase > 1f) // next bar
+        {
+            NextBar();
+        }
+    }
+
+    void NextBar()
+    {
+        barPhase %= 1f;
+        bar++;
+        Debug.Log(tick - m_TickAtStartOfBar);
+        m_TickAtStartOfBar = tick;
+        // only update time signature when bar changes, to simplify tick counting
+        m_TimeSignatureNumerator = TimingSettings.timeSignature.numerator;
+        m_TimeSignatureDenominator = TimingSettings.timeSignature.denominator;
     }
 }

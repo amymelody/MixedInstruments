@@ -154,7 +154,7 @@ GameObject:
   - component: {fileID: 2777563891644009803}
   - component: {fileID: 398519292565725130}
   m_Layer: 0
-  m_Name: DrumMachine
+  m_Name: Drums
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

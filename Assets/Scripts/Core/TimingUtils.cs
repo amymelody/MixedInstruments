@@ -13,8 +13,18 @@ public static class TimingUtils
         }
     }
 
+    public static long GetBar()
+    {
+        return metronome.bar;
+    }
+
     public static float GetBarPhase()
     {
         return metronome.barPhase;
+    }
+
+    public static long GetTick()
+    {
+        return metronome.tick;
     }
 }

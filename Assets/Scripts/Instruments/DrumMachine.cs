@@ -1,3 +1,4 @@
+using Melanchall.DryWetMidi.Common;
 using Melanchall.DryWetMidi.Standards;
 using System;
 using System.Collections.Generic;
@@ -33,6 +34,8 @@ public class DrumMachine : MidiInstrument
 
     [SerializeField]
     int m_ButtonColumns = 8;
+
+    public override MidiAmp amp => m_Amp;
 
     void Start()
     {
@@ -92,7 +95,7 @@ public class DrumMachine : MidiInstrument
         if (!isActiveAndEnabled || touchElement is not SampleButton sampleButton)
             return;
 
-        m_Amp.NoteOn(sampleButton.midiNoteNumber);
+        NoteOn(sampleButton.midiNoteNumber);
     }
 
     void OnSampleButtonReleased(TouchElement touchElement)
@@ -100,6 +103,6 @@ public class DrumMachine : MidiInstrument
         if (!isActiveAndEnabled || touchElement is not SampleButton sampleButton)
             return;
 
-        m_Amp.NoteOff(sampleButton.midiNoteNumber);
+        NoteOff(sampleButton.midiNoteNumber);
     }
 }

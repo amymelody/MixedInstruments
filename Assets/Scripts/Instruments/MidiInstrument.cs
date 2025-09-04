@@ -1,4 +1,6 @@
+using Melanchall.DryWetMidi.Common;
 using Melanchall.DryWetMidi.Core;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,16 +13,23 @@ public enum RecordingState
 
 public abstract class MidiInstrument : MonoBehaviour
 {
+    const string k_ClipNameFormat = "{0}_{1}";
+    const string k_ClipDateTimeFormat = "yyyy_MM_dd_HHmmss";
+
+    public abstract MidiAmp amp { get; }
+
     public RecordingState recordingState { get; private set; }
 
     public List<MidiEvent> recordingEvents { get; private set; }
 
-    float m_LastBarPhase;
+    long m_LastBar;
+
+    long m_LastEventTick;
 
     public void PrimeForRecording()
     {
         recordingState = RecordingState.Primed;
-        m_LastBarPhase = TimingUtils.GetBarPhase();
+        m_LastBar = TimingUtils.GetBar();
         recordingEvents = new List<MidiEvent>();
     }
 
@@ -32,7 +41,7 @@ public abstract class MidiInstrument : MonoBehaviour
         }
         else if (recordingState == RecordingState.Active)
         {
-
+            SaveRecording();
         }
 
         recordingState = RecordingState.Inactive;
@@ -42,8 +51,8 @@ public abstract class MidiInstrument : MonoBehaviour
     {
         if (recordingState == RecordingState.Primed)
         {
-            var barPhase = TimingUtils.GetBarPhase();
-            if (barPhase < m_LastBarPhase) // we've looped around to next bar
+            var bar = TimingUtils.GetBar();
+            if (bar > m_LastBar) // we've ticked to next bar
             {
                 if (TimingSettings.recordLeadIn && !TimingSettings.recordLeadInActive)
                 {
@@ -55,7 +64,7 @@ public abstract class MidiInstrument : MonoBehaviour
                 }
             }
 
-            m_LastBarPhase = barPhase;
+            m_LastBar = bar;
         }
     }
 
@@ -63,10 +72,42 @@ public abstract class MidiInstrument : MonoBehaviour
     {
         StopLeadIn();
         recordingState = RecordingState.Active;
+        m_LastEventTick = 0;
     }
 
     void StopLeadIn()
     {
         TimingSettings.recordLeadInActive = false;
+    }
+
+    public virtual void NoteOn(SevenBitNumber noteNumber)
+    {
+        amp.NoteOn(noteNumber);
+
+        if (recordingState == RecordingState.Active)
+        {
+            var velocity = SevenBitNumber.MaxValue;
+            var noteOnEvent = new NoteOnEvent(noteNumber, velocity);
+        }
+    }
+
+    public virtual void NoteOff(SevenBitNumber noteNumber)
+    {
+        amp.NoteOff(noteNumber);
+
+        if (recordingState == RecordingState.Active)
+        {
+            var velocity = SevenBitNumber.MaxValue;
+            var noteOffEvent = new NoteOffEvent(noteNumber, velocity);
+        }
+    }
+
+    void SaveRecording()
+    {
+        // TODO: handle overdub
+        var trackChunk = new TrackChunk(recordingEvents);
+        var midiFile = new MidiFile(trackChunk);
+        var fileName = string.Format(k_ClipNameFormat, gameObject.name, DateTime.Now.ToString(k_ClipDateTimeFormat));
+        midiFile.Write(fileName);
     }
 }

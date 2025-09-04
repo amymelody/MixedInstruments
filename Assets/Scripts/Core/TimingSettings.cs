@@ -48,6 +48,10 @@ public static class TimingSettings
 
     const string k_BpmKey = PlayerPrefsPrefix + "BPM";
     static float k_Bpm;
+
+    /// <summary>
+    /// Quarter notes per minute
+    /// </summary>
     public static float bpm
     {
         get => k_Bpm;
