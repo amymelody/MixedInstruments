@@ -18,6 +18,8 @@ public class Metronome : FreeOscillatorAmp
 
     public long tick { get; private set; }
 
+    public long tickAtStartOfBar { get; private set; }
+
     int m_TimeSignatureNumerator;
     int m_TimeSignatureDenominator;
     float m_BarPhaseStep;
@@ -25,7 +27,6 @@ public class Metronome : FreeOscillatorAmp
     float m_BeatDuration;
     float m_BeatBarFraction;
     float m_QuarterPerBar;
-    long m_TickAtStartOfBar;
 
     protected override void Awake()
     {
@@ -36,8 +37,8 @@ public class Metronome : FreeOscillatorAmp
         UpdateTiming();
         bar = (long)(AudioSettings.dspTime / m_BarDuration);
         barPhase = (float)(AudioSettings.dspTime % m_BarDuration) / m_BarDuration;
-        m_TickAtStartOfBar = (long)((float)(m_QuarterPerBar * bar) * TicksPerQuarterNoteTimeDivision.DefaultTicksPerQuarterNote);
-        tick = m_TickAtStartOfBar + (long)((float)(m_QuarterPerBar * barPhase) * TicksPerQuarterNoteTimeDivision.DefaultTicksPerQuarterNote);
+        tickAtStartOfBar = (long)((float)(m_QuarterPerBar * bar) * TicksPerQuarterNoteTimeDivision.DefaultTicksPerQuarterNote);
+        tick = tickAtStartOfBar + (long)((float)(m_QuarterPerBar * barPhase) * TicksPerQuarterNoteTimeDivision.DefaultTicksPerQuarterNote);
     }
 
     void UpdateTiming()
@@ -80,7 +81,7 @@ public class Metronome : FreeOscillatorAmp
         }
 
         barPhase += m_BarPhaseStep;
-        tick = m_TickAtStartOfBar + (long)((float)(m_QuarterPerBar * barPhase) * TicksPerQuarterNoteTimeDivision.DefaultTicksPerQuarterNote);
+        tick = tickAtStartOfBar + (long)((float)(m_QuarterPerBar * barPhase) * TicksPerQuarterNoteTimeDivision.DefaultTicksPerQuarterNote);
         if (barPhase > 1f) // next bar
         {
             NextBar();
@@ -91,8 +92,8 @@ public class Metronome : FreeOscillatorAmp
     {
         barPhase %= 1f;
         bar++;
-        Debug.Log(tick - m_TickAtStartOfBar);
-        m_TickAtStartOfBar = tick;
+        Debug.Log(tick - tickAtStartOfBar);
+        tickAtStartOfBar = tick;
         // only update time signature when bar changes, to simplify tick counting
         m_TimeSignatureNumerator = TimingSettings.timeSignature.numerator;
         m_TimeSignatureDenominator = TimingSettings.timeSignature.denominator;

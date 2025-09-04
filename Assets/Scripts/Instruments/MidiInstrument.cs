@@ -29,7 +29,7 @@ public abstract class MidiInstrument : MonoBehaviour
     public void PrimeForRecording()
     {
         recordingState = RecordingState.Primed;
-        m_LastBar = TimingUtils.GetBar();
+        m_LastBar = TimingUtils.metronome.bar;
         recordingEvents = new List<MidiEvent>();
     }
 
@@ -51,7 +51,7 @@ public abstract class MidiInstrument : MonoBehaviour
     {
         if (recordingState == RecordingState.Primed)
         {
-            var bar = TimingUtils.GetBar();
+            var bar = TimingUtils.metronome.bar;
             if (bar > m_LastBar) // we've ticked to next bar
             {
                 if (TimingSettings.recordLeadIn && !TimingSettings.recordLeadInActive)
@@ -72,7 +72,7 @@ public abstract class MidiInstrument : MonoBehaviour
     {
         StopLeadIn();
         recordingState = RecordingState.Active;
-        m_LastEventTick = 0;
+        m_LastEventTick = TimingUtils.metronome.tickAtStartOfBar;
     }
 
     void StopLeadIn()
@@ -86,8 +86,7 @@ public abstract class MidiInstrument : MonoBehaviour
 
         if (recordingState == RecordingState.Active)
         {
-            var velocity = SevenBitNumber.MaxValue;
-            var noteOnEvent = new NoteOnEvent(noteNumber, velocity);
+            RecordNoteEvent<NoteOnEvent>(noteNumber, SevenBitNumber.MaxValue);
         }
     }
 
@@ -97,9 +96,71 @@ public abstract class MidiInstrument : MonoBehaviour
 
         if (recordingState == RecordingState.Active)
         {
-            var velocity = SevenBitNumber.MaxValue;
-            var noteOffEvent = new NoteOffEvent(noteNumber, velocity);
+            RecordNoteEvent<NoteOffEvent>(noteNumber, SevenBitNumber.MaxValue);
         }
+    }
+
+    void RecordNoteEvent<TNoteEvent>(SevenBitNumber noteNumber, SevenBitNumber velocity) where TNoteEvent : NoteEvent, new()
+    {
+        var noteEvent = new TNoteEvent();
+        noteEvent.NoteNumber = noteNumber;
+        noteEvent.Velocity = velocity;
+
+        var tick = TimingUtils.metronome.tick;
+        switch (TimingSettings.recordQuantization)
+        {
+            case Quantization.Quarter:
+                tick = QuantizedTick(tick, 1);
+                break;
+            case Quantization.Eighth:
+                tick = QuantizedTick(tick, 2);
+                break;
+            case Quantization.EighthTriplets:
+                tick = QuantizedTick(tick, 3);
+                break;
+            case Quantization.EighthAndTriplets:
+                var eighth = QuantizedTick(tick, 2);
+                var eighthTriplet = QuantizedTick(tick, 3);
+                if (Mathf.Abs(tick - eighth) < Mathf.Abs(tick - eighthTriplet))
+                    tick = eighth;
+                else
+                    tick = eighthTriplet;
+                break;
+            case Quantization.Sixteenth:
+                tick = QuantizedTick(tick, 4);
+                break;
+            case Quantization.SixteenthTriplets:
+                tick = QuantizedTick(tick, 6);
+                break;
+            case Quantization.SixteenthAndTriplets:
+                var sixteenth = QuantizedTick(tick, 4);
+                var sixteenthTriplet = QuantizedTick(tick, 6);
+                if (Mathf.Abs(tick - sixteenth) < Mathf.Abs(tick - sixteenthTriplet))
+                    tick = sixteenth;
+                else
+                    tick = sixteenthTriplet;
+                break;
+            case Quantization.ThirtySecond:
+                tick = QuantizedTick(tick, 8);
+                break;
+            default:
+                break;
+        }
+
+        noteEvent.DeltaTime = tick - m_LastEventTick;
+        m_LastEventTick = tick;
+
+        recordingEvents.Add(noteEvent);
+    }
+
+    long QuantizedTick(long tick, short quantPerQuarter)
+    {
+        var ticksPerQuant = TicksPerQuarterNoteTimeDivision.DefaultTicksPerQuarterNote / quantPerQuarter;
+        var offTicks = tick % ticksPerQuant;
+        if (offTicks < ticksPerQuant / 2)
+            return tick - offTicks; // round down
+        
+        return tick + ticksPerQuant - offTicks; // round up
     }
 
     void SaveRecording()
