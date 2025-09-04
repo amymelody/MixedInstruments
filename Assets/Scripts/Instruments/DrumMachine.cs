@@ -11,7 +11,7 @@ public class DrumSample
     public string displayName;
 }
 
-public class DrumMachine : Instrument
+public class DrumMachine : MidiInstrument
 {
     [SerializeField]
     MidiSampleAmp m_Amp;

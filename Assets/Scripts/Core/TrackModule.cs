@@ -4,7 +4,7 @@ using UnityEngine;
 public class TrackModule : Module
 {
     [SerializeField]
-    Instrument m_Instrument;
+    MidiInstrument m_Instrument;
 
     [SerializeField]
     Transform m_FrontUI;
@@ -71,7 +71,13 @@ public class TrackModule : Module
 
     void OnRecordButtonTouched(TouchElement button)
     {
+        if (m_Instrument.recordingState == RecordingState.Inactive)
+        {
+            m_Instrument.PrimeForRecording();
+            return;
+        }
 
+        m_Instrument.StopRecording();
     }
 
     void OnPlayButtonTouched(TouchElement button)

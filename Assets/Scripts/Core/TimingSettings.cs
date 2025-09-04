@@ -83,6 +83,8 @@ public static class TimingSettings
         set => k_PlayMetronome = value;
     }
 
+    public static bool recordLeadInActive { get; set; }
+
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     static void OnBeforeSceneLoad()
     {

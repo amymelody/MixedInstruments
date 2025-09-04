@@ -11,7 +11,8 @@ public class Metronome : FreeOscillatorAmp
     [SerializeField]
     float m_TickDecay = 0.015f;
 
-    float m_BarPhase;
+    public float barPhase { get; private set; }
+
     float m_BarPhaseStep;
     float m_BarDuration;
     float m_BeatDuration;
@@ -21,7 +22,13 @@ public class Metronome : FreeOscillatorAmp
     {
         base.Awake();
 
-        m_BarPhase = 0f;
+        var bpm = TimingSettings.bpm;
+        var timeSignature = TimingSettings.timeSignature;
+        var beatsPerBar = timeSignature.numerator;
+        var beatToQuarterRatio = 4f / timeSignature.denominator;
+        m_BeatDuration = beatToQuarterRatio * 60f / bpm;
+        m_BarDuration = m_BeatDuration * beatsPerBar;
+        barPhase = (float)(AudioSettings.dspTime % m_BarDuration) / m_BarDuration;
     }
 
     protected override void OnBeforeDSPTimeSync(double diffFromExpectedTime)
@@ -36,11 +43,11 @@ public class Metronome : FreeOscillatorAmp
         m_BarDuration = m_BeatDuration * beatsPerBar;
         m_BeatBarFraction = 1f / beatsPerBar;
         var barPhaseDiff = (float)diffFromExpectedTime / m_BarDuration;
-        m_BarPhase += barPhaseDiff;
-        if (m_BarPhase < 0)
-            m_BarPhase = 1f - m_BarPhase;
-        else if (m_BarPhase > 1f)
-            m_BarPhase %= 1f;
+        barPhase += barPhaseDiff;
+        if (barPhase < 0)
+            barPhase = 1f - barPhase;
+        else if (barPhase > 1f)
+            barPhase %= 1f;
 
         m_BarPhaseStep = sampleTimeStep / m_BarDuration;
     }
@@ -49,12 +56,12 @@ public class Metronome : FreeOscillatorAmp
     {
         base.OnBeforeSample();
 
-        if (TimingSettings.playMetronome)
+        if (TimingSettings.playMetronome || TimingSettings.recordLeadInActive)
         {
-            var accent = m_BarPhase < m_BeatBarFraction;
+            var accent = barPhase < m_BeatBarFraction;
             var tickInitFrequency = accent ? m_AccentTickFrequency : m_RegularTickFrequency;
             var tickInitVolume = accent ? 1f : 0.5f;
-            var beatPhase = (m_BarPhase % m_BeatBarFraction) / m_BeatBarFraction;
+            var beatPhase = (barPhase % m_BeatBarFraction) / m_BeatBarFraction;
             var beatTime = m_BeatDuration * beatPhase;
             var tickStrength = 1f - Mathf.InverseLerp(0f, m_TickDecay, beatTime);
             frequency = Mathf.Lerp(0f, tickInitFrequency, tickStrength);
@@ -65,6 +72,6 @@ public class Metronome : FreeOscillatorAmp
             volume = 0f;
         }
 
-        m_BarPhase = (m_BarPhase + m_BarPhaseStep) % 1f;
+        barPhase = (barPhase + m_BarPhaseStep) % 1f;
     }
 }
