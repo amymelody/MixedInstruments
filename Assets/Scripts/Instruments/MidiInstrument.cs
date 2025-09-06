@@ -2,6 +2,7 @@ using Melanchall.DryWetMidi.Common;
 using Melanchall.DryWetMidi.Core;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public enum RecordingState
@@ -13,7 +14,7 @@ public enum RecordingState
 
 public abstract class MidiInstrument : MonoBehaviour
 {
-    const string k_ClipNameFormat = "{0}_{1}";
+    const string k_ClipNameFormat = "{0}_{1}.mid";
     const string k_ClipDateTimeFormat = "yyyy_MM_dd_HHmmss";
 
     public abstract MidiAmp amp { get; }
@@ -22,14 +23,20 @@ public abstract class MidiInstrument : MonoBehaviour
 
     public List<MidiEvent> recordingEvents { get; private set; }
 
+    public EventsCollection playbackEvents { get; private set; }
+
     long m_LastBar;
 
-    long m_LastEventTick;
+    long m_LastRecordedEventTick;
+
+    long m_PlaybackLengthInTicks;
+    long m_LastPlaybackTick;
+    int m_LastPlayedEventIndex;
 
     public void PrimeForRecording()
     {
         recordingState = RecordingState.Primed;
-        m_LastBar = TimingUtils.metronome.bar;
+        m_LastBar = Metronome.instance.bar;
         recordingEvents = new List<MidiEvent>();
     }
 
@@ -47,11 +54,26 @@ public abstract class MidiInstrument : MonoBehaviour
         recordingState = RecordingState.Inactive;
     }
 
+    public void StartPlayback(MidiFile midiFile)
+    {
+        playbackEvents = midiFile.GetTrackChunks().First().Events;
+
+        // start playback from a place that will line up the start of the next bar with the start of the recording
+        // wherever we are in the current bar, start playback from that part of the last bar in the recording
+        
+    }
+
+    public void StopPlayback()
+    {
+
+    }
+
     protected virtual void Update()
     {
+        var bar = Metronome.instance.bar;
+
         if (recordingState == RecordingState.Primed)
         {
-            var bar = TimingUtils.metronome.bar;
             if (bar > m_LastBar) // we've ticked to next bar
             {
                 if (TimingSettings.recordLeadIn && !TimingSettings.recordLeadInActive)
@@ -63,16 +85,16 @@ public abstract class MidiInstrument : MonoBehaviour
                     StartRecording();
                 }
             }
-
-            m_LastBar = bar;
         }
+
+        m_LastBar = bar;
     }
 
     void StartRecording()
     {
         StopLeadIn();
         recordingState = RecordingState.Active;
-        m_LastEventTick = TimingUtils.metronome.tickAtStartOfBar;
+        m_LastRecordedEventTick = Metronome.instance.tickAtStartOfBar;
     }
 
     void StopLeadIn()
@@ -106,7 +128,7 @@ public abstract class MidiInstrument : MonoBehaviour
         noteEvent.NoteNumber = noteNumber;
         noteEvent.Velocity = velocity;
 
-        var tick = TimingUtils.metronome.tick;
+        var tick = Metronome.instance.tick;
         switch (TimingSettings.recordQuantization)
         {
             case Quantization.Quarter:
@@ -147,8 +169,8 @@ public abstract class MidiInstrument : MonoBehaviour
                 break;
         }
 
-        noteEvent.DeltaTime = tick - m_LastEventTick;
-        m_LastEventTick = tick;
+        noteEvent.DeltaTime = tick - m_LastRecordedEventTick;
+        m_LastRecordedEventTick = tick;
 
         recordingEvents.Add(noteEvent);
     }
@@ -165,10 +187,24 @@ public abstract class MidiInstrument : MonoBehaviour
 
     void SaveRecording()
     {
+        // end the track at the end of the current bar
+        //var endOfTrackEvent = new MarkerEvent();
+        //endOfTrackEvent.DeltaTime = Metronome.instance.ticksLeftInBar;
+        //recordingEvents.Add(endOfTrackEvent);
+
+        long totalTicks = 0;
+        foreach (var midEvent in recordingEvents)
+        {
+            totalTicks += midEvent.DeltaTime;
+        }
+
+        Debug.Log("recording total ticks: " + totalTicks);
+
         // TODO: handle overdub
         var trackChunk = new TrackChunk(recordingEvents);
         var midiFile = new MidiFile(trackChunk);
         var fileName = string.Format(k_ClipNameFormat, gameObject.name, DateTime.Now.ToString(k_ClipDateTimeFormat));
         midiFile.Write(fileName);
+        StartPlayback(midiFile);
     }
 }

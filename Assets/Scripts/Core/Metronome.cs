@@ -12,6 +12,17 @@ public class Metronome : FreeOscillatorAmp
     [SerializeField]
     float m_TickDecay = 0.015f;
 
+    static Metronome k_Instance;
+    public static Metronome instance
+    {
+        get
+        {
+            if (k_Instance == null)
+                k_Instance = FindFirstObjectByType<Metronome>();
+            return k_Instance;
+        }
+    }
+
     public float barPhase { get; private set; }
 
     public long bar { get; private set; }
@@ -19,6 +30,14 @@ public class Metronome : FreeOscillatorAmp
     public long tick { get; private set; }
 
     public long tickAtStartOfBar { get; private set; }
+
+    public long ticksLeftInBar
+    {
+        get
+        {
+            return (long)((float)(m_QuarterPerBar * (1f - barPhase)) * TicksPerQuarterNoteTimeDivision.DefaultTicksPerQuarterNote);
+        }
+    }
 
     int m_TimeSignatureNumerator;
     int m_TimeSignatureDenominator;
@@ -37,8 +56,8 @@ public class Metronome : FreeOscillatorAmp
         UpdateTiming();
         bar = (long)(AudioSettings.dspTime / m_BarDuration);
         barPhase = (float)(AudioSettings.dspTime % m_BarDuration) / m_BarDuration;
-        tickAtStartOfBar = (long)((float)(m_QuarterPerBar * bar) * TicksPerQuarterNoteTimeDivision.DefaultTicksPerQuarterNote);
-        tick = tickAtStartOfBar + (long)((float)(m_QuarterPerBar * barPhase) * TicksPerQuarterNoteTimeDivision.DefaultTicksPerQuarterNote);
+        tickAtStartOfBar = 0;
+        tick = 0;
     }
 
     void UpdateTiming()
@@ -92,7 +111,6 @@ public class Metronome : FreeOscillatorAmp
     {
         barPhase %= 1f;
         bar++;
-        Debug.Log(tick - tickAtStartOfBar);
         tickAtStartOfBar = tick;
         // only update time signature when bar changes, to simplify tick counting
         m_TimeSignatureNumerator = TimingSettings.timeSignature.numerator;
