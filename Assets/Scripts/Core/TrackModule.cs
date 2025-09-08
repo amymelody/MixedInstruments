@@ -1,3 +1,5 @@
+using Melanchall.DryWetMidi.Core;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -23,6 +25,9 @@ public class TrackModule : Module
 
     [SerializeField]
     TextMeshProUGUI m_ClipText;
+
+    int m_ClipIndex;
+    List<MidiFile> m_MidiFiles = new List<MidiFile>();
 
     public override void AttachToTabletop(Tabletop tabletop)
     {
@@ -82,7 +87,14 @@ public class TrackModule : Module
 
     void OnPlayButtonTouched(TouchElement button)
     {
-
+        if (m_Instrument.isPlaying)
+        {
+            m_Instrument.StopPlayback();
+        }
+        else if (m_MidiFiles.Count > 0)
+        {
+            m_Instrument.StartPlayback(m_MidiFiles[m_ClipIndex]);
+        }
     }
 
     void OnCycleClipButtonTouched(TouchElement button)

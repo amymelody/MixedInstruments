@@ -1,4 +1,3 @@
-using Melanchall.DryWetMidi.Common;
 using Melanchall.DryWetMidi.Standards;
 using System;
 using System.Collections.Generic;
@@ -12,7 +11,7 @@ public class DrumSample
     public string displayName;
 }
 
-public class DrumMachine : MidiInstrument
+public class DrumKit : MidiInstrument
 {
     [SerializeField]
     MidiSampleAmp m_Amp;

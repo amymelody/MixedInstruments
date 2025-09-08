@@ -1,7 +1,6 @@
 using Melanchall.DryWetMidi.Common;
 using Melanchall.DryWetMidi.Core;
 using Melanchall.DryWetMidi.Interaction;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -15,9 +14,6 @@ public enum RecordingState
 
 public abstract class MidiInstrument : MonoBehaviour
 {
-    const string k_ClipNameFormat = "{0}_{1}.mid";
-    const string k_ClipDateTimeFormat = "yyyy_MM_dd_HHmmss";
-
     public abstract MidiAmp amp { get; }
 
     public RecordingState recordingState { get; private set; }
@@ -25,6 +21,8 @@ public abstract class MidiInstrument : MonoBehaviour
     public List<MidiEvent> recordingEvents { get; private set; }
 
     public EventsCollection playbackEvents { get; private set; }
+
+    public bool isPlaying { get; private set; }
 
     long m_LastBar;
 
@@ -57,6 +55,7 @@ public abstract class MidiInstrument : MonoBehaviour
 
     public void StartPlayback(MidiFile midiFile)
     {
+        isPlaying = true;
         playbackEvents = midiFile.GetTrackChunks().First().Events;
 
         // start playback from a place that will line up the start of the next bar with the start of the recording
@@ -66,7 +65,7 @@ public abstract class MidiInstrument : MonoBehaviour
 
     public void StopPlayback()
     {
-
+        isPlaying = false;
     }
 
     protected virtual void Update()
@@ -196,8 +195,7 @@ public abstract class MidiInstrument : MonoBehaviour
         // no need to specify end of track - seems like MidiFile automatically sets end of track to be the end of the last bar, based on time signature
         midiFile.ReplaceTempoMap(TempoMap.Create(Tempo.FromBeatsPerMinute(TimingSettings.bpm), TimingSettings.timeSignature));
 
-        var fileName = string.Format(k_ClipNameFormat, gameObject.name, DateTime.Now.ToString(k_ClipDateTimeFormat));
-        midiFile.Write(fileName);
+        MidiFilesManager.WriteNewMidiFile(midiFile, GetType().Name);
         StartPlayback(midiFile);
     }
 }
