@@ -1,3 +1,4 @@
+using Melanchall.DryWetMidi.Interaction;
 using System;
 using System.Collections.Generic;
 using TMPro;
@@ -51,14 +52,14 @@ public class SettingsManager : MonoBehaviour
         m_TimeSigTopSlider.wholeNumbers = true;
         m_TimeSigTopSlider.minValue = m_TimeSigTopRange.x;
         m_TimeSigTopSlider.maxValue = m_TimeSigTopRange.y;
-        m_TimeSigTopSlider.value = TimingSettings.timeSignature.numerator;
-        m_TimeSigTopValueText.text = TimingSettings.timeSignature.numerator.ToString("F0");
+        m_TimeSigTopSlider.value = TimingSettings.timeSignature.Numerator;
+        m_TimeSigTopValueText.text = TimingSettings.timeSignature.Numerator.ToString("F0");
 
         m_TimeSigBottomSlider.wholeNumbers = true;
         m_TimeSigBottomSlider.minValue = 0;
         m_TimeSigBottomSlider.maxValue = 4;
-        m_TimeSigBottomSlider.value = math.log2(TimingSettings.timeSignature.denominator);
-        m_TimeSigBottomValueText.text = TimingSettings.timeSignature.denominator.ToString("F0");
+        m_TimeSigBottomSlider.value = math.log2(TimingSettings.timeSignature.Denominator);
+        m_TimeSigBottomValueText.text = TimingSettings.timeSignature.Denominator.ToString("F0");
 
         m_RecordQuantizationDropdown.ClearOptions();
         var options = new List<TMP_Dropdown.OptionData>();
@@ -100,7 +101,8 @@ public class SettingsManager : MonoBehaviour
 
     void SetTimeSignatureNumerator(float value)
     {
-        TimingSettings.timeSignature.numerator = Mathf.RoundToInt(value);
+        var timeSig = TimingSettings.timeSignature;
+        TimingSettings.timeSignature = new TimeSignature(Mathf.RoundToInt(value), timeSig.Denominator);
         m_TimeSigTopValueText.text = value.ToString("F0");
     }
 
@@ -109,7 +111,9 @@ public class SettingsManager : MonoBehaviour
         var exp = Mathf.RoundToInt(value);
         var denom = 1;
         for (var i = 0; i < exp; i++) denom *= 2;
-        TimingSettings.timeSignature.denominator = denom;
+
+        var timeSig = TimingSettings.timeSignature;
+        TimingSettings.timeSignature = new TimeSignature(timeSig.Numerator, denom);
         m_TimeSigBottomValueText.text = denom.ToString();
     }
 

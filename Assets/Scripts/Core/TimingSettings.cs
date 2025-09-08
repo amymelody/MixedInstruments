@@ -1,5 +1,4 @@
-using System;
-using Unity.Mathematics;
+using Melanchall.DryWetMidi.Interaction;
 using UnityEngine;
 
 public enum Quantization
@@ -13,33 +12,6 @@ public enum Quantization
     SixteenthTriplets,
     SixteenthAndTriplets,
     ThirtySecond
-}
-
-public class TimeSignature
-{
-    int m_Numerator = 4;
-    public int numerator
-    {
-        get => m_Numerator;
-        set
-        {
-            if (value <= 0)
-                throw new ArgumentOutOfRangeException("TimeSignature numerator must be > 0");
-            m_Numerator = value;
-        }
-    }
-
-    int m_Denominator = 4;
-    public int denominator
-    {
-        get => m_Denominator;
-        set
-        {
-            if (value <= 0 || !math.ispow2(value))
-                throw new ArgumentOutOfRangeException("TimeSignature denominator must be power of 2");
-            m_Denominator = value;
-        }
-    }
 }
 
 public static class TimingSettings
@@ -61,7 +33,11 @@ public static class TimingSettings
     const string k_TimeSignatureNumeratorKey = PlayerPrefsPrefix + "Numerator";
     const string k_TimeSignatureDenominatorKey = PlayerPrefsPrefix + "Denominator";
     static TimeSignature k_TimeSignature;
-    public static TimeSignature timeSignature => k_TimeSignature;
+    public static TimeSignature timeSignature
+    {
+        get => k_TimeSignature;
+        set => k_TimeSignature = value;
+    }
 
     const string k_RecordQuantizationKey = PlayerPrefsPrefix + "RecordQuantization";
     static Quantization k_RecordQuantization;
@@ -96,9 +72,9 @@ public static class TimingSettings
         k_RecordQuantization = PlayerPrefs.HasKey(k_RecordQuantizationKey) ? (Quantization)PlayerPrefs.GetInt(k_RecordQuantizationKey) : Quantization.None;
         k_RecordLeadIn = PlayerPrefs.HasKey(k_RecordLeadInKey) ? PlayerPrefs.GetInt(k_RecordLeadInKey) > 0 : false;
         k_PlayMetronome = PlayerPrefs.HasKey(k_PlayMetronomeKey) ? PlayerPrefs.GetInt(k_PlayMetronomeKey) > 0 : false;
-        k_TimeSignature = new TimeSignature();
-        k_TimeSignature.numerator = PlayerPrefs.HasKey(k_TimeSignatureNumeratorKey) ? PlayerPrefs.GetInt(k_TimeSignatureNumeratorKey) : 4;
-        k_TimeSignature.denominator = PlayerPrefs.HasKey(k_TimeSignatureDenominatorKey) ? PlayerPrefs.GetInt(k_TimeSignatureDenominatorKey) : 4;
+        var numerator = PlayerPrefs.HasKey(k_TimeSignatureNumeratorKey) ? PlayerPrefs.GetInt(k_TimeSignatureNumeratorKey) : 4;
+        var denominator = PlayerPrefs.HasKey(k_TimeSignatureDenominatorKey) ? PlayerPrefs.GetInt(k_TimeSignatureDenominatorKey) : 4;
+        k_TimeSignature = new TimeSignature(numerator, denominator);
 
         Application.quitting += OnApplicationQuitting;
     }
@@ -109,5 +85,7 @@ public static class TimingSettings
         PlayerPrefs.SetInt(k_RecordQuantizationKey, (int)k_RecordQuantization);
         PlayerPrefs.SetInt(k_RecordLeadInKey, k_RecordLeadIn ? 1 : 0);
         PlayerPrefs.SetInt(k_PlayMetronomeKey, k_PlayMetronome ? 1 : 0);
+        PlayerPrefs.SetInt(k_TimeSignatureNumeratorKey, k_TimeSignature.Numerator);
+        PlayerPrefs.SetInt(k_TimeSignatureDenominatorKey, k_TimeSignature.Denominator);
     }
 }

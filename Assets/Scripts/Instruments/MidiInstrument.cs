@@ -1,5 +1,6 @@
 using Melanchall.DryWetMidi.Common;
 using Melanchall.DryWetMidi.Core;
+using Melanchall.DryWetMidi.Interaction;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -187,22 +188,14 @@ public abstract class MidiInstrument : MonoBehaviour
 
     void SaveRecording()
     {
-        // end the track at the end of the current bar
-        //var endOfTrackEvent = new MarkerEvent();
-        //endOfTrackEvent.DeltaTime = Metronome.instance.ticksLeftInBar;
-        //recordingEvents.Add(endOfTrackEvent);
-
-        long totalTicks = 0;
-        foreach (var midEvent in recordingEvents)
-        {
-            totalTicks += midEvent.DeltaTime;
-        }
-
-        Debug.Log("recording total ticks: " + totalTicks);
-
         // TODO: handle overdub
         var trackChunk = new TrackChunk(recordingEvents);
         var midiFile = new MidiFile(trackChunk);
+
+        // TODO: record time signature and bpm changes
+        // no need to specify end of track - seems like MidiFile automatically sets end of track to be the end of the last bar, based on time signature
+        midiFile.ReplaceTempoMap(TempoMap.Create(Tempo.FromBeatsPerMinute(TimingSettings.bpm), TimingSettings.timeSignature));
+
         var fileName = string.Format(k_ClipNameFormat, gameObject.name, DateTime.Now.ToString(k_ClipDateTimeFormat));
         midiFile.Write(fileName);
         StartPlayback(midiFile);

@@ -51,8 +51,8 @@ public class Metronome : FreeOscillatorAmp
     {
         base.Awake();
 
-        m_TimeSignatureNumerator = TimingSettings.timeSignature.numerator;
-        m_TimeSignatureDenominator = TimingSettings.timeSignature.denominator;
+        m_TimeSignatureNumerator = TimingSettings.timeSignature.Numerator;
+        m_TimeSignatureDenominator = TimingSettings.timeSignature.Denominator;
         UpdateTiming();
         bar = (long)(AudioSettings.dspTime / m_BarDuration);
         barPhase = (float)(AudioSettings.dspTime % m_BarDuration) / m_BarDuration;
@@ -113,7 +113,7 @@ public class Metronome : FreeOscillatorAmp
         bar++;
         tickAtStartOfBar = tick;
         // only update time signature when bar changes, to simplify tick counting
-        m_TimeSignatureNumerator = TimingSettings.timeSignature.numerator;
-        m_TimeSignatureDenominator = TimingSettings.timeSignature.denominator;
+        m_TimeSignatureNumerator = TimingSettings.timeSignature.Numerator;
+        m_TimeSignatureDenominator = TimingSettings.timeSignature.Denominator;
     }
 }
