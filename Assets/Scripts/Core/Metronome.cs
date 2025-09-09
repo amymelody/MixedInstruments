@@ -31,11 +31,19 @@ public class Metronome : FreeOscillatorAmp
 
     public long tickAtStartOfBar { get; private set; }
 
+    public long ticksPerBar
+    {
+        get
+        {
+            return (long)(m_QuarterPerBar * TicksPerQuarterNoteTimeDivision.DefaultTicksPerQuarterNote);
+        }
+    }
+
     public long ticksLeftInBar
     {
         get
         {
-            return (long)((float)(m_QuarterPerBar * (1f - barPhase)) * TicksPerQuarterNoteTimeDivision.DefaultTicksPerQuarterNote);
+            return ticksPerBar - (tick - tickAtStartOfBar);
         }
     }
 
@@ -100,8 +108,8 @@ public class Metronome : FreeOscillatorAmp
         }
 
         barPhase += m_BarPhaseStep;
-        tick = tickAtStartOfBar + (long)((float)(m_QuarterPerBar * barPhase) * TicksPerQuarterNoteTimeDivision.DefaultTicksPerQuarterNote);
-        if (barPhase > 1f) // next bar
+        tick = tickAtStartOfBar + (long)(barPhase * ticksPerBar);
+        if (tick - tickAtStartOfBar >= ticksPerBar) // next bar
         {
             NextBar();
         }

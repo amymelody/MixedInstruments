@@ -1,6 +1,7 @@
 using Melanchall.DryWetMidi.Common;
 using Melanchall.DryWetMidi.Core;
 using Melanchall.DryWetMidi.Interaction;
+using Melanchall.DryWetMidi.Multimedia;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -18,9 +19,9 @@ public abstract class MidiInstrument : MonoBehaviour
 
     public RecordingState recordingState { get; private set; }
 
-    public List<MidiEvent> recordingEvents { get; private set; }
+    public List<MidiEvent> recordingEvents { get; private set; } = new List<MidiEvent>();
 
-    public EventsCollection playbackEvents { get; private set; }
+    public List<MidiEvent> playbackEvents { get; private set; } = new List<MidiEvent>();
 
     public bool isPlaying { get; private set; }
 
@@ -29,14 +30,14 @@ public abstract class MidiInstrument : MonoBehaviour
     long m_LastRecordedEventTick;
 
     long m_PlaybackLengthInTicks;
-    long m_LastPlaybackTick;
-    int m_LastPlayedEventIndex;
+    int m_NextPlaybackEventIndex;
+    long m_LastPlayedEventTick;
 
     public void PrimeForRecording()
     {
         recordingState = RecordingState.Primed;
         m_LastBar = Metronome.instance.bar;
-        recordingEvents = new List<MidiEvent>();
+        recordingEvents.Clear();
     }
 
     public void StopRecording()
@@ -56,11 +57,35 @@ public abstract class MidiInstrument : MonoBehaviour
     public void StartPlayback(MidiFile midiFile)
     {
         isPlaying = true;
-        playbackEvents = midiFile.GetTrackChunks().First().Events;
+
+        playbackEvents.Clear();
+        foreach (var trackChunk in midiFile.GetTrackChunks())
+        {
+            playbackEvents.AddRange(trackChunk.Events);
+        }
 
         // start playback from a place that will line up the start of the next bar with the start of the recording
         // wherever we are in the current bar, start playback from that part of the last bar in the recording
-        
+        m_PlaybackLengthInTicks = playbackEvents.DefaultIfEmpty().Sum((MidiEvent e) => e?.DeltaTime ?? 0);
+        var ticksLeftInBar = Metronome.instance.ticksLeftInBar;
+        long lastEventTick = 0;
+        for (var i = 0; i < playbackEvents.Count; i++)
+        {
+            var midiEvent = playbackEvents[i];
+            var eventTick = lastEventTick + midiEvent.DeltaTime;
+            var ticksLeftUntilLoop = m_PlaybackLengthInTicks - eventTick;
+            // checking strictly less than only works if ticksLeftInBar > 0, which we ensure is always the case as long as ticksPerBar > 0
+            if (ticksLeftUntilLoop < ticksLeftInBar)
+            {
+                // we've found the NEXT event that should play
+                m_NextPlaybackEventIndex = i;
+                var ticksSinceLastEvent = midiEvent.DeltaTime - (ticksLeftInBar - ticksLeftUntilLoop);
+                m_LastPlayedEventTick = Metronome.instance.tick - ticksSinceLastEvent;
+                break;
+            }
+
+            lastEventTick = eventTick;
+        }
     }
 
     public void StopPlayback()
@@ -85,6 +110,12 @@ public abstract class MidiInstrument : MonoBehaviour
                     StartRecording();
                 }
             }
+        }
+
+        if (isPlaying)
+        {
+            // process all events that fall within time since last event
+
         }
 
         m_LastBar = bar;
@@ -195,7 +226,7 @@ public abstract class MidiInstrument : MonoBehaviour
         // no need to specify end of track - seems like MidiFile automatically sets end of track to be the end of the last bar, based on time signature
         midiFile.ReplaceTempoMap(TempoMap.Create(Tempo.FromBeatsPerMinute(TimingSettings.bpm), TimingSettings.timeSignature));
 
-        MidiFilesManager.WriteNewMidiFile(midiFile, GetType().Name);
+        MidiFilesManager.WriteNewMidiFile(midiFile, GetType());
         StartPlayback(midiFile);
     }
 }

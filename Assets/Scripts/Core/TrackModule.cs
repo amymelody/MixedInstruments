@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class TrackModule : Module
 {
+    const string k_NoClipsText = "No clips";
+
     [SerializeField]
     MidiInstrument m_Instrument;
 
@@ -28,6 +30,7 @@ public class TrackModule : Module
 
     int m_ClipIndex;
     List<MidiFile> m_MidiFiles = new List<MidiFile>();
+    List<string> m_MidiFileNames = new List<string>();
 
     public override void AttachToTabletop(Tabletop tabletop)
     {
@@ -36,6 +39,9 @@ public class TrackModule : Module
 
     void OnEnable()
     {
+        MidiFilesManager.GetMidiFiles(m_MidiFiles, m_MidiFileNames, m_Instrument.GetType());
+        m_ClipText.text = m_MidiFileNames.Count > 0 ? m_MidiFileNames[m_ClipIndex] : k_NoClipsText;
+
         m_RecordButton.onTouchEnd.AddListener(OnRecordButtonTouched);
         m_PlayButton.onTouchEnd.AddListener(OnPlayButtonTouched);
         m_CycleClipButton.onTouchEnd.AddListener(OnCycleClipButtonTouched);
