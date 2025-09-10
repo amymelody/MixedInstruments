@@ -118,9 +118,19 @@ public abstract class MidiInstrument : MonoBehaviour
             while (playbackEvents[m_NextPlaybackEventIndex].DeltaTime <= deltaTicks)
             {
                 var midiEvent = playbackEvents[m_NextPlaybackEventIndex];
-                ProcessEvent(midiEvent);
                 deltaTicks -= midiEvent.DeltaTime;
-                m_NextPlaybackEventIndex = (m_NextPlaybackEventIndex + 1) % playbackEvents.Count;
+                m_LastPlayedEventTick += midiEvent.DeltaTime;
+
+                // count last event as "played" but skip processing - it just marks end of track
+                if (m_NextPlaybackEventIndex == playbackEvents.Count - 1)
+                {
+                    m_NextPlaybackEventIndex = 0;
+                }
+                else
+                {
+                    ProcessEvent(midiEvent);
+                    m_NextPlaybackEventIndex++;
+                }
             }
         }
 
@@ -129,7 +139,19 @@ public abstract class MidiInstrument : MonoBehaviour
 
     void ProcessEvent(MidiEvent midiEvent)
     {
-
+        switch (midiEvent.EventType)
+        {
+            case MidiEventType.NoteOn:
+                var noteOnEvent = midiEvent as NoteOnEvent;
+                NoteOn(noteOnEvent.NoteNumber);
+                break;
+            case MidiEventType.NoteOff:
+                var noteOffEvent = midiEvent as NoteOffEvent;
+                NoteOff(noteOffEvent.NoteNumber);
+                break;
+            default:
+                break;
+        }
     }
 
     void StartRecording()
