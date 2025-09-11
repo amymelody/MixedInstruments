@@ -317,6 +317,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BoxCollider: {fileID: 8101892836449110351}
+  m_Text: {fileID: 2518818326039846538}
+  m_Renderer: {fileID: 4832998013516732974}
   onTouchStart:
     m_PersistentCalls:
       m_Calls: []

@@ -1,3 +1,4 @@
+using TMPro;
 using Unity.XR.CoreUtils;
 using UnityEngine;
 using UnityEngine.Events;
@@ -9,6 +10,16 @@ public class TouchElement : MonoBehaviour
 
     [SerializeField]
     BoxCollider m_BoxCollider;
+
+    [SerializeField]
+    TextMeshProUGUI m_Text;
+
+    [SerializeField]
+    Renderer m_Renderer;
+
+    public TextMeshProUGUI text => m_Text;
+
+    public Renderer buttonRenderer => m_Renderer;
 
     public UnityEvent<TouchElement> onTouchStart;
     public UnityEvent<TouchElement> onTouchEnd;

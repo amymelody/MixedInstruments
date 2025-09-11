@@ -1,6 +1,7 @@
 using Melanchall.DryWetMidi.Common;
 using Melanchall.DryWetMidi.Core;
 using Melanchall.DryWetMidi.Interaction;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -23,6 +24,8 @@ public abstract class MidiInstrument : MonoBehaviour
     public List<MidiEvent> playbackEvents { get; private set; } = new List<MidiEvent>();
 
     public bool isPlaying { get; private set; }
+
+    public event Action onRecordingStart;
 
     long m_LastBar;
 
@@ -159,6 +162,7 @@ public abstract class MidiInstrument : MonoBehaviour
         StopLeadIn();
         recordingState = RecordingState.Active;
         m_LastRecordedEventTick = Metronome.instance.tickAtStartOfBar;
+        onRecordingStart?.Invoke();
     }
 
     void StopLeadIn()

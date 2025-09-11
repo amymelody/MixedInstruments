@@ -31,21 +31,15 @@ public class Metronome : FreeOscillatorAmp
 
     public long tickAtStartOfBar { get; private set; }
 
-    public long ticksPerBar
-    {
-        get
-        {
-            return (long)(m_QuarterPerBar * TicksPerQuarterNoteTimeDivision.DefaultTicksPerQuarterNote);
-        }
-    }
+    public long ticksPerBar => (long) (m_QuarterPerBar* TicksPerQuarterNoteTimeDivision.DefaultTicksPerQuarterNote);
 
-    public long ticksLeftInBar
-    {
-        get
-        {
-            return ticksPerBar - (tick - tickAtStartOfBar);
-        }
-    }
+    public long ticksLeftInBar => ticksPerBar - (tick - tickAtStartOfBar);
+
+    public float beatPhase => (barPhase % m_BeatBarFraction) / m_BeatBarFraction;
+
+    public int beatInBar => 1 + Mathf.FloorToInt(barPhase / m_BeatBarFraction);
+
+    public int beatsPerBar => m_TimeSignatureNumerator;
 
     int m_TimeSignatureNumerator;
     int m_TimeSignatureDenominator;
@@ -71,11 +65,10 @@ public class Metronome : FreeOscillatorAmp
     void UpdateTiming()
     {
         var bpm = TimingSettings.bpm;
-        var beatsPerBar = m_TimeSignatureNumerator;
         var quarterDuration = 60f / bpm;
-        var beatToQuarterRatio = 4f / m_TimeSignatureDenominator;
-        m_QuarterPerBar = beatToQuarterRatio * beatsPerBar;
-        m_BeatDuration = beatToQuarterRatio * quarterDuration;
+        var quarterPerBeat = 4f / m_TimeSignatureDenominator;
+        m_QuarterPerBar = quarterPerBeat * beatsPerBar;
+        m_BeatDuration = quarterPerBeat * quarterDuration;
         m_BarDuration = m_BeatDuration * beatsPerBar;
         m_BeatBarFraction = 1f / beatsPerBar;
         m_BarPhaseStep = sampleTimeStep / m_BarDuration;
