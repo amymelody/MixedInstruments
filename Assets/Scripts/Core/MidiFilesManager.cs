@@ -26,10 +26,15 @@ public static class MidiFilesManager
         midiFile.Write(Path.Combine(subdir, fileName));
     }
 
-    public static void GetMidiFiles(ICollection<MidiFile> midiFiles, ICollection<string> midiFileNames, Type instrumentType)
+    public static void OverwriteMidiFile(MidiFile midiFile, string filePath)
+    {
+        midiFile.Write(filePath, true);
+    }
+
+    public static void GetMidiFiles(ICollection<MidiFile> midiFiles, ICollection<string> midiFilePaths, Type instrumentType)
     {
         midiFiles.Clear();
-        midiFileNames.Clear();
+        midiFilePaths.Clear();
         var instrumentName = instrumentType.Name;
 
         var subdir = Path.Combine(ClipsDirectoryName, instrumentName);
@@ -41,7 +46,7 @@ public static class MidiFilesManager
             if (Path.GetExtension(filePath).Equals(k_MidiExtension))
             {
                 midiFiles.Add(MidiFile.Read(filePath));
-                midiFileNames.Add(Path.GetFileNameWithoutExtension(filePath));
+                midiFilePaths.Add(filePath);
             }
         }
     }

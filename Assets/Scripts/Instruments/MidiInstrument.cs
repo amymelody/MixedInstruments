@@ -1,6 +1,5 @@
 using Melanchall.DryWetMidi.Common;
 using Melanchall.DryWetMidi.Core;
-using Melanchall.DryWetMidi.Interaction;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +25,7 @@ public abstract class MidiInstrument : MonoBehaviour
     public bool isPlaying { get; private set; }
 
     public event Action onRecordingStart;
+    public event Action onRecordingComplete;
 
     long m_LastBar;
 
@@ -34,12 +34,17 @@ public abstract class MidiInstrument : MonoBehaviour
     long m_PlaybackLengthInTicks;
     int m_NextPlaybackEventIndex;
     long m_LastPlayedEventTick;
+    long m_OverdubStartTick;
 
     public void PrimeForRecording()
     {
         recordingState = RecordingState.Primed;
         m_LastBar = Metronome.instance.bar;
         recordingEvents.Clear();
+
+        // if overdub, start immediately
+        if (isPlaying)
+            StartRecording(m_OverdubStartTick);
     }
 
     public void StopRecording()
@@ -50,7 +55,21 @@ public abstract class MidiInstrument : MonoBehaviour
         }
         else if (recordingState == RecordingState.Active)
         {
-            SaveRecording();
+            if (isPlaying)
+            {
+                MergeOverdub();
+            }
+            else
+            {
+                // Add dummy note event marking endpoint (end of current bar)
+                // TODO: different event type?
+                var endTick = Metronome.instance.tick + Metronome.instance.ticksLeftInBar;
+                var endEvent = new NoteOnEvent();
+                endEvent.DeltaTime = endTick - m_LastRecordedEventTick;
+                recordingEvents.Add(endEvent);
+            }
+
+            onRecordingComplete?.Invoke();
         }
 
         recordingState = RecordingState.Inactive;
@@ -83,6 +102,7 @@ public abstract class MidiInstrument : MonoBehaviour
                 m_NextPlaybackEventIndex = i;
                 var ticksSinceLastEvent = midiEvent.DeltaTime - (ticksLeftInBar - ticksLeftUntilLoop);
                 m_LastPlayedEventTick = Metronome.instance.tick - ticksSinceLastEvent;
+                m_OverdubStartTick = m_LastPlayedEventTick - lastEventTick;
                 break;
             }
 
@@ -92,6 +112,10 @@ public abstract class MidiInstrument : MonoBehaviour
 
     public void StopPlayback()
     {
+        // save overdub if we stop playing
+        if (recordingState == RecordingState.Active)
+            StopRecording();
+
         isPlaying = false;
     }
 
@@ -105,11 +129,12 @@ public abstract class MidiInstrument : MonoBehaviour
             {
                 if (TimingSettings.recordLeadIn && !TimingSettings.recordLeadInActive)
                 {
+                    // TODO: time this in metronome itself so we hear accent tick at beginning instead of end
                     TimingSettings.recordLeadInActive = true;
                 }
                 else
                 {
-                    StartRecording();
+                    StartRecording(Metronome.instance.tickAtStartOfBar);
                 }
             }
         }
@@ -128,6 +153,14 @@ public abstract class MidiInstrument : MonoBehaviour
                 if (m_NextPlaybackEventIndex == playbackEvents.Count - 1)
                 {
                     m_NextPlaybackEventIndex = 0;
+
+                    // if overdub, merge at end of playback loop and start recording at next tick
+                    if (recordingState == RecordingState.Active)
+                    {
+                        MergeOverdub();
+                        recordingEvents.Clear();
+                        m_LastRecordedEventTick = m_LastPlayedEventTick;
+                    }
                 }
                 else
                 {
@@ -146,22 +179,22 @@ public abstract class MidiInstrument : MonoBehaviour
         {
             case MidiEventType.NoteOn:
                 var noteOnEvent = midiEvent as NoteOnEvent;
-                NoteOn(noteOnEvent.NoteNumber);
+                NoteOn(noteOnEvent.NoteNumber, true);
                 break;
             case MidiEventType.NoteOff:
                 var noteOffEvent = midiEvent as NoteOffEvent;
-                NoteOff(noteOffEvent.NoteNumber);
+                NoteOff(noteOffEvent.NoteNumber, true);
                 break;
             default:
                 break;
         }
     }
 
-    void StartRecording()
+    void StartRecording(long startTick)
     {
         StopLeadIn();
         recordingState = RecordingState.Active;
-        m_LastRecordedEventTick = Metronome.instance.tickAtStartOfBar;
+        m_LastRecordedEventTick = startTick;
         onRecordingStart?.Invoke();
     }
 
@@ -170,21 +203,21 @@ public abstract class MidiInstrument : MonoBehaviour
         TimingSettings.recordLeadInActive = false;
     }
 
-    public virtual void NoteOn(SevenBitNumber noteNumber)
+    public virtual void NoteOn(SevenBitNumber noteNumber, bool isPlayback = false)
     {
         amp.NoteOn(noteNumber);
 
-        if (recordingState == RecordingState.Active)
+        if (recordingState == RecordingState.Active && !isPlayback)
         {
             RecordNoteEvent<NoteOnEvent>(noteNumber, SevenBitNumber.MaxValue);
         }
     }
 
-    public virtual void NoteOff(SevenBitNumber noteNumber)
+    public virtual void NoteOff(SevenBitNumber noteNumber, bool isPlayback = false)
     {
         amp.NoteOff(noteNumber);
 
-        if (recordingState == RecordingState.Active)
+        if (recordingState == RecordingState.Active && !isPlayback)
         {
             RecordNoteEvent<NoteOffEvent>(noteNumber, SevenBitNumber.MaxValue);
         }
@@ -253,23 +286,64 @@ public abstract class MidiInstrument : MonoBehaviour
         return tick + ticksPerQuant - offTicks; // round up
     }
 
-    void SaveRecording()
+    void MergeOverdub()
     {
-        // Add dummy note event marking endpoint (end of current bar)
-        // TODO: different event type?
-        var endTick = Metronome.instance.tick + Metronome.instance.ticksLeftInBar;
-        var endEvent = new NoteOnEvent();
-        endEvent.DeltaTime = endTick - m_LastRecordedEventTick;
-        recordingEvents.Add(endEvent);
+        if (recordingEvents.Count == 0)
+            return;
 
-        // TODO: handle overdub
-        var trackChunk = new TrackChunk(recordingEvents);
-        var midiFile = new MidiFile(trackChunk);
+        var mergedEvents = new List<MidiEvent>();
+        var playI = 0;
+        var recI = 0;
+        long lastTick = 0;
+        long lastPlayTick = 0;
+        long lastRecTick = 0;
+        while (playI < playbackEvents.Count && recI < recordingEvents.Count)
+        {
+            var playEvent = playbackEvents[playI];
+            var recEvent = recordingEvents[recI];
+            var playTick = lastPlayTick + playEvent.DeltaTime;
+            var recTick = lastRecTick + recEvent.DeltaTime;
+            if (playTick <= recTick)
+            {
+                playEvent.DeltaTime = playTick - lastTick;
+                mergedEvents.Add(playEvent);
+                lastPlayTick = playTick;
+                lastTick = playTick;
+                playI++;
+            }
+            else
+            {
+                recEvent.DeltaTime = recTick - lastTick;
+                mergedEvents.Add(recEvent);
+                lastRecTick = recTick;
+                lastTick = recTick;
+                recI++;
+            }
+        }
 
-        // TODO: record time signature and bpm changes
-        midiFile.ReplaceTempoMap(TempoMap.Create(Tempo.FromBeatsPerMinute(TimingSettings.bpm), TimingSettings.timeSignature));
+        while (playI < playbackEvents.Count)
+        {
+            var playEvent = playbackEvents[playI];
+            var playTick = lastPlayTick + playEvent.DeltaTime;
+            playEvent.DeltaTime = playTick - lastTick;
+            mergedEvents.Add(playEvent);
+            lastPlayTick = playTick;
+            lastTick = playTick;
+            playI++;
+        }
 
-        MidiFilesManager.WriteNewMidiFile(midiFile, GetType());
-        StartPlayback(midiFile);
+        while (recI < recordingEvents.Count)
+        {
+            var recEvent = recordingEvents[recI];
+            var recTick = lastRecTick + recEvent.DeltaTime;
+            recEvent.DeltaTime = recTick - lastTick;
+            mergedEvents.Add(recEvent);
+            lastRecTick = recTick;
+            lastTick = recTick;
+            recI++;
+        }
+
+        playbackEvents.Clear();
+        playbackEvents.AddRange(mergedEvents);
     }
 }
