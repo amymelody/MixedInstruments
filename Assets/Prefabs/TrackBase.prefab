@@ -121,12 +121,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Instrument: {fileID: 0}
-  m_FrontUI: {fileID: 89141970703826964}
+  m_ClipUI: {fileID: 5231603826698649224}
   m_FrontUIPadding: 0.05
-  m_RecordButton: {fileID: 8208451358741688550}
-  m_PlayButton: {fileID: 8973078484424092576}
-  m_CycleClipButton: {fileID: 5119704921125596946}
-  m_ClipText: {fileID: 747549346805321282}
 --- !u!1 &3951749157303827146
 GameObject:
   m_ObjectHideFlags: 0
@@ -375,6 +371,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 89141970703826964}
+  - component: {fileID: 5231603826698649224}
   m_Layer: 0
   m_Name: RecordingUI
   m_TagString: Untagged
@@ -401,6 +398,22 @@ Transform:
   - {fileID: 8033978946128937752}
   m_Father: {fileID: 9108766014904040022}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5231603826698649224
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8171504841236078057}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 95caeb02addd46b4d84c9b0f82067ee1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_RecordButton: {fileID: 8208451358741688550}
+  m_PlayButton: {fileID: 8973078484424092576}
+  m_CycleClipButton: {fileID: 5119704921125596946}
+  m_ClipText: {fileID: 747549346805321282}
 --- !u!1001 &405476061302634852
 PrefabInstance:
   m_ObjectHideFlags: 0
